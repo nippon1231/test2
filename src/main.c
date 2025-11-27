@@ -1,7 +1,8 @@
 // main.c - Moteur de plateforme avec sols solides et traversants pour SGDK 2.11
 
 #include <genesis.h>
-
+#include "game.h"
+#include "resources.h"
 // Constantes
 #define GRAVITY 0.4
 #define JUMP_FORCE -6.5
@@ -20,6 +21,8 @@ typedef struct {
     bool onGround;
     bool jumpPressed;
     bool downPressed;
+    bool mirroir;
+    u8 action;
     Sprite* sprite;
 } Player;
 
@@ -39,10 +42,10 @@ const u8 levelMap[28][32] = {
     {0,0,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0},
@@ -72,8 +75,8 @@ u8 getTileAt(s16 x, s16 y) {
 
 // Vérifie la collision avec les sols solides
 bool checkSolidCollision(fix32 x, fix32 y, s16 width, s16 height) {
-    s16 px = fix32ToInt(x);
-    s16 py = fix32ToInt(y);
+    s16 px = F32_toInt(x);
+    s16 py = F32_toInt(y);
     
     // Vérifie les 4 coins et le centre pour un sprite 42x42
     if (getTileAt(px, py) == TILE_SOLID) return TRUE;
@@ -88,8 +91,8 @@ bool checkSolidCollision(fix32 x, fix32 y, s16 width, s16 height) {
 
 // Vérifie la collision avec les plateformes (uniquement par le haut)
 bool checkPlatformCollision(fix32 x, fix32 y, s16 width, s16 height) {
-    s16 px = fix32ToInt(x);
-    s16 py = fix32ToInt(y);
+    s16 px = F32_toInt(x);
+    s16 py = F32_toInt(y);
     
     // Vérifie uniquement les pieds du personnage (plusieurs points pour 42px de large)
     if (getTileAt(px, py + height - 1) == TILE_PLATFORM) return TRUE;
@@ -111,22 +114,27 @@ void initPlayer() {
     
     // Sprite 42x42
     player.sprite = SPR_addSprite(&sprite_player, 
-                                  fix32ToInt(player.x), 
-                                  fix32ToInt(player.y), 
+                                  F32_toInt(player.x), 
+                                  F32_toInt(player.y), 
                                   TILE_ATTR(PAL0, 0, FALSE, FALSE));
 }
 
 // Met à jour la physique du joueur
 void updatePlayer() {
     u16 joy = JOY_readJoypad(JOY_1);
-    
+    player.action = ANIM_IDLE;
     // Déplacement horizontal
     player.vx = FIX32(0);
     if (joy & BUTTON_LEFT) {
         player.vx = FIX32(-MOVE_SPEED);
+        player.mirroir = TRUE;
+        player.action = ANIM_WALK;
     }
     if (joy & BUTTON_RIGHT) {
         player.vx = FIX32(MOVE_SPEED);
+        player.mirroir = FALSE;
+        player.action = ANIM_WALK;
+
     }
     
     // Détection des touches pour le saut et descente
@@ -137,45 +145,46 @@ void updatePlayer() {
     if (jumpDown && !player.jumpPressed && player.onGround) {
         player.vy = FIX32(JUMP_FORCE);
         player.onGround = FALSE;
+        player.action = ANIM_JUMP;
     }
     player.jumpPressed = jumpDown;
     
     // Descendre à travers les plateformes
     if (downDown && !player.downPressed && player.onGround) {
         // Déplace légèrement vers le bas pour traverser la plateforme
-        player.y = fix32Add(player.y, FIX32(2));
+        player.y = player.y + FIX32(2);
         player.onGround = FALSE;
     }
     player.downPressed = downDown;
     
     // Gravité
     if (!player.onGround) {
-        player.vy = fix32Add(player.vy, FIX32(GRAVITY));
-        if (fix32ToInt(player.vy) > MAX_FALL_SPEED) {
+        player.vy = player.vy + FIX32(GRAVITY);
+        if (F32_toInt(player.vy) > MAX_FALL_SPEED) {
             player.vy = FIX32(MAX_FALL_SPEED);
         }
     }
     
     // Déplacement horizontal
-    fix32 newX = fix32Add(player.x, player.vx);
+    fix32 newX = player.x + player.vx;
     if (!checkSolidCollision(newX, player.y, 42, 42)) {
         player.x = newX;
     }
     
     // Déplacement vertical
-    fix32 newY = fix32Add(player.y, player.vy);
+    fix32 newY = player.y+ player.vy;
     
     // Collision avec le sol solide
     if (player.vy > FIX32(0)) { // Descend
         if (checkSolidCollision(player.x, newY, 42, 42)) {
             // Ajuste la position au-dessus du sol
-            player.y = FIX32((fix32ToInt(player.y) / 8) * 8);
+            player.y = FIX32((F32_toInt(player.y) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
         } else if (checkPlatformCollision(player.x, newY, 42, 42) && 
                    !checkPlatformCollision(player.x, player.y, 42, 42)) {
             // Atterrit sur une plateforme
-            player.y = FIX32((fix32ToInt(newY) / 8) * 8);
+            player.y = FIX32((F32_toInt(newY) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
         } else {
@@ -192,12 +201,14 @@ void updatePlayer() {
     }
     
     // Limites de l'écran
-    if (fix32ToInt(player.x) < 0) player.x = FIX32(0);
-    if (fix32ToInt(player.x) > 278) player.x = FIX32(278); // 320 - 42
-    if (fix32ToInt(player.y) > 224) player.y = FIX32(100); // Respawn
+    if (F32_toInt(player.x) < 0) player.x = FIX32(0);
+    if (F32_toInt(player.x) > 278) player.x = FIX32(278); // 320 - 42
+    if (F32_toInt(player.y) > 224) player.y = FIX32(100); // Respawn
     
     // Met à jour le sprite
-    SPR_setPosition(player.sprite, fix32ToInt(player.x), fix32ToInt(player.y));
+    SPR_setPosition(player.sprite, F32_toInt(player.x), F32_toInt(player.y));
+        SPR_setHFlip(player.sprite, player.mirroir); 
+    SPR_setAnim(player.sprite,player.action);  
 }
 
 // Dessine la map
@@ -227,9 +238,9 @@ int main() {
     SPR_init();
     
     // Palette simple
-    PAL_setPalette(PAL0, palette_grey.data, DMA);
-    PAL_setPalette(PAL1, palette_red.data, DMA);
-    PAL_setPalette(PAL2, palette_green.data, DMA);
+    PAL_setColor(0, RGB24_TO_VDPCOLOR(0x000000));
+    PAL_setColor(1, RGB24_TO_VDPCOLOR(0xFFFFFF));
+    PAL_setColor(2, RGB24_TO_VDPCOLOR(0xAA0000)); // Couleur pour le joueur
     
     // Dessine la map
     drawMap();
