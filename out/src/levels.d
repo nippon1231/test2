@@ -1,4 +1,4 @@
-out/src/main.o: src/main.c c:/sgdk/inc/genesis.h c:/sgdk/inc/types.h \
+out/src/levels.o: src/levels.c c:/sgdk/inc/genesis.h c:/sgdk/inc/types.h \
  c:/sgdk/inc/config.h c:/sgdk/inc/asm.h c:/sgdk/inc/sys.h \
  c:/sgdk/inc/sram.h c:/sgdk/inc/mapper.h c:/sgdk/inc/memory.h \
  c:/sgdk/inc/memory_base.h c:/sgdk/inc/tools.h c:/sgdk/inc/bmp.h \
@@ -17,5 +17,4 @@ out/src/main.o: src/main.c c:/sgdk/inc/genesis.h c:/sgdk/inc/types.h \
  c:/sgdk/inc/task_cst.h c:/sgdk/inc/ext/flash-save/flash.h \
  c:/sgdk/inc/types.h c:/sgdk/inc/ext/flash-save/saveman.h \
  c:/sgdk/inc/ext/console.h c:/sgdk/inc/config.h c:/sgdk/inc/string.h \
- c:/sgdk/inc/maths.h c:/sgdk/inc/dma.h res/game.h res/resources.h \
- res/levels.h
+ c:/sgdk/inc/maths.h c:/sgdk/inc/dma.h res/game.h res/resources.h
