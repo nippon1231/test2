@@ -41,12 +41,12 @@ const u8 levelMap[28][32] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,2,2,2,2,2,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0},
     {0,0,0,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -77,10 +77,13 @@ u8 getTileAt(s16 x, s16 y) {
 bool checkSolidCollision(fix32 x, fix32 y, s16 width, s16 height) {
     s16 px = F32_toInt(x);
     s16 py = F32_toInt(y);
-    
+
+
+
     // Vérifie les 4 coins et le centre pour un sprite 42x42
     if (getTileAt(px, py) == TILE_SOLID) return TRUE;
     if (getTileAt(px + width - 1, py) == TILE_SOLID) return TRUE;
+
     if (getTileAt(px, py + height - 1) == TILE_SOLID) return TRUE;
     if (getTileAt(px + width - 1, py + height - 1) == TILE_SOLID) return TRUE;
     if (getTileAt(px + width/2, py) == TILE_SOLID) return TRUE;
@@ -199,7 +202,13 @@ void updatePlayer() {
             player.y = newY;
         }
     }
-    
+        // Vérifie si le joueur est toujours sur le sol après le déplacement horizontal
+    if (player.onGround) {
+        if (!checkSolidCollision(player.x, player.y, 42, 42) &&
+            !checkPlatformCollision(player.x, player.y, 42, 42)) {
+            player.onGround = FALSE;
+        }
+    }   
     // Limites de l'écran
     if (F32_toInt(player.x) < 0) player.x = FIX32(0);
     if (F32_toInt(player.x) > 278) player.x = FIX32(278); // 320 - 42
