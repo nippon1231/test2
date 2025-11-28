@@ -28,6 +28,8 @@ typedef struct {
     bool mirroir;
     u8 action;
     Sprite* sprite;
+    Sprite* sprite_bullet;
+    Sprite* sprite_playershoot;
 } Player;
 
 // Variables globales
@@ -124,35 +126,63 @@ void initPlayer() {
                                   F32_toInt(player.x), 
                                   F32_toInt(player.y), 
                                   TILE_ATTR(PAL0, 0, FALSE, FALSE));
+    player.sprite_bullet = SPR_addSprite(&sprite_bullet, 0, 0, TILE_ATTR(PAL0, 0, FALSE, FALSE));
+    player.sprite_playershoot = SPR_addSprite(&sprite_playershoot, 0, 0, TILE_ATTR(PAL0, 0, FALSE, FALSE));
 }
 
 // Met à jour la physique du joueur
 void updatePlayer() {
     u16 joy = JOY_readJoypad(JOY_1);
-    
+    SPR_setVisibility(player.sprite_playershoot, HIDDEN);   
     player.vx = FIX32(0);
-    player.action = ANIM_IDLE;
+    if(!(player.jumpPressed)){
+        player.action = ANIM_IDLE;
+    }
     if (joy & BUTTON_LEFT) {
         player.vx = FIX32(-MOVE_SPEED);
         player.mirroir = TRUE;
-        player.action = ANIM_WALK;
+       if(!(player.jumpPressed && player.onGround))
+            player.action = ANIM_WALK;
     }
     if (joy & BUTTON_RIGHT) {
         player.vx = FIX32(MOVE_SPEED);
         player.mirroir = false;
-        player.action = ANIM_WALK;        
+        if(!player.jumpPressed && player.onGround)
+            player.action = ANIM_WALK;        
     }
     if (joy & BUTTON_DOWN) {
         player.vx = FIX32(0);
         player.action = ANIM_CROUCH;
     }
-    
-    bool jumpDown = (joy & BUTTON_A) || (joy & BUTTON_B) || (joy & BUTTON_C);
+    if (joy & BUTTON_C) {
+        player.action = ANIM_FIRE;
+        if(  player.mirroir )
+        {
+            // on ffiche ele sprite player.shoot a la position du player
+            SPR_setPosition(player.sprite_playershoot, F32_toInt(player.x)-cameraX-20, F32_toInt(player.y));
+        }
+        else {
+            // on ffiche ele sprite player.shoot a la position du player
+            SPR_setPosition(player.sprite_playershoot, F32_toInt(player.x)-cameraX+36, F32_toInt(player.y));
+        }
+
+        // on affiche le sprite
+        SPR_setHFlip(player.sprite_playershoot, player.mirroir);
+        SPR_setVisibility(player.sprite_playershoot, VISIBLE);    
+    }   
+    else {
+        SPR_setVisibility(player.sprite_playershoot, HIDDEN);    
+    } 
+    bool jumpDown = (joy & BUTTON_A) || (joy & BUTTON_B);
     bool downDown = (joy & BUTTON_DOWN);
     
     if (jumpDown && !player.jumpPressed && player.onGround) {
-        player.vy = FIX32(JUMP_FORCE);
-        player.onGround = FALSE;
+        if(player.action != ANIM_CROUCH)
+        {
+            player.vy = FIX32(JUMP_FORCE);
+            player.onGround = FALSE;
+            player.action = ANIM_JUMP;
+        }
     }
     player.jumpPressed = jumpDown;
     
@@ -229,6 +259,8 @@ void updatePlayer() {
     SPR_setPosition(player.sprite, F32_toInt(player.x) - cameraX, F32_toInt(player.y) - cameraY);
     SPR_setHFlip(player.sprite, player.mirroir); 
     SPR_setAnim(player.sprite,player.action); 
+
+
 }
 
 // Dessine la map
@@ -254,15 +286,12 @@ void drawMap() {
 
 int main() {
     VDP_setScreenWidth320();
+    PAL_setPalette(PAL0,palette_main.data,DMA);
     SPR_init();
-    
+
     u16 palette[16];
     
-    palette[0] = RGB24_TO_VDPCOLOR(0x000000);
-    palette[1] = RGB24_TO_VDPCOLOR(0x808080);
-    palette[2] = RGB24_TO_VDPCOLOR(0xC0C0C0);
-    palette[3] = RGB24_TO_VDPCOLOR(0xFFFFFF);
-    PAL_setPalette(PAL0, palette, CPU);
+
     
     palette[0] = RGB24_TO_VDPCOLOR(0x000000);
     palette[1] = RGB24_TO_VDPCOLOR(0x800000);
