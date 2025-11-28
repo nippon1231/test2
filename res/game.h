@@ -6,5 +6,18 @@
 #define ANIM_CROUCH  2
 #define ANIM_FIRE  3
 #define ANIM_JUMP  4
+#define MAX_BULLETS 10
+typedef struct {
+    fix32 x, y;
+    bool active;
+    bool mirrored;
+    Sprite* sprite;    
+} bullets;
 
-#endif // _RES_GMAE_H_
+typedef struct {
+ // tableau de bullets
+    bullets player_bullet[MAX_BULLETS];    
+} GameState;
+
+
+#endif // _RES_GAME_H_

@@ -3,6 +3,7 @@
 #include <genesis.h>
 #include "resources.h"
 #include "game.h"
+#include "bullets.h"
 // Constantes
 #define GRAVITY 0.4
 #define JUMP_FORCE -6.5
@@ -18,21 +19,11 @@
 #define TILE_SOLID 1
 #define TILE_PLATFORM 2
 
-// États du joueur
-typedef struct {
-    fix32 x, y;
-    fix32 vx, vy;
-    bool onGround;
-    bool jumpPressed;
-    bool downPressed;
-    bool mirroir;
-    u8 action;
-    Sprite* sprite;
-    Sprite* sprite_bullet;
-    Sprite* sprite_playershoot;
-} Player;
+
 
 // Variables globales
+GameState game_state;
+
 Player player;
 Map* bgMap;
 s16 cameraX = 0;
@@ -155,20 +146,8 @@ void updatePlayer() {
         player.action = ANIM_CROUCH;
     }
     if (joy & BUTTON_C) {
-        player.action = ANIM_FIRE;
-        if(  player.mirroir )
-        {
-            // on ffiche ele sprite player.shoot a la position du player
-            SPR_setPosition(player.sprite_playershoot, F32_toInt(player.x)-cameraX-20, F32_toInt(player.y));
-        }
-        else {
-            // on ffiche ele sprite player.shoot a la position du player
-            SPR_setPosition(player.sprite_playershoot, F32_toInt(player.x)-cameraX+36, F32_toInt(player.y));
-        }
-
-        // on affiche le sprite
-        SPR_setHFlip(player.sprite_playershoot, player.mirroir);
-        SPR_setVisibility(player.sprite_playershoot, VISIBLE);    
+ 
+        bullets_spawn(F32_toInt(player.x)-cameraX+21, F32_toInt(player.y),player.mirroir); 
     }   
     else {
         SPR_setVisibility(player.sprite_playershoot, HIDDEN);    
@@ -310,6 +289,7 @@ int main() {
     
     while (1) {
         updatePlayer();
+        bullets_update();
         SPR_update();
         SYS_doVBlankProcess();
     }
