@@ -2,20 +2,22 @@
 
 #include <genesis.h>
 #include "resources.h"
-#include "player.h"
-
+#include "game.h"
 // Constantes
 #define GRAVITY 0.4
 #define JUMP_FORCE -6.5
 #define MOVE_SPEED 2
 #define MAX_FALL_SPEED 8
 
+// Dimensions de la map
+#define MAP_WIDTH 64
+#define MAP_HEIGHT 32
+
 // Types de tiles
 #define TILE_EMPTY 0
 #define TILE_SOLID 1
 #define TILE_PLATFORM 2
-#define MAPW 64
-#define MAPH 32
+
 // États du joueur
 typedef struct {
     fix32 x, y;
@@ -23,8 +25,8 @@ typedef struct {
     bool onGround;
     bool jumpPressed;
     bool downPressed;
-    bool mirroir ;
-    u8 action ;    
+    bool mirroir;
+    u8 action;
     Sprite* sprite;
 } Player;
 
@@ -34,8 +36,8 @@ Map* bgMap;
 s16 cameraX = 0;
 s16 cameraY = 0;
 
-// Tile map étendue (64x32 tiles pour permettre le scroll)
-const u8 levelMap[MAPH][MAPW] = {
+// Tile map étendue
+const u8 levelMap[MAP_HEIGHT][MAP_WIDTH] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -75,7 +77,7 @@ u8 getTileAt(s16 x, s16 y) {
     s16 tileX = x / 8;
     s16 tileY = y / 8;
     
-    if (tileX < 0 || tileX >= MAPW || tileY < 0 || tileY >= MAPH)
+    if (tileX < 0 || tileX >= MAP_WIDTH || tileY < 0 || tileY >= MAP_HEIGHT)
         return TILE_EMPTY;
     
     return levelMap[tileY][tileX];
@@ -129,29 +131,28 @@ void updatePlayer() {
     u16 joy = JOY_readJoypad(JOY_1);
     
     player.vx = FIX32(0);
-    player.action = ANIM_IDLE ;
-   
+    player.action = ANIM_IDLE;
     if (joy & BUTTON_LEFT) {
         player.vx = FIX32(-MOVE_SPEED);
-        player.mirroir = TRUE ;
-        player.action = ANIM_WALK ;
+        player.mirroir = TRUE;
+        player.action = ANIM_WALK;
     }
     if (joy & BUTTON_RIGHT) {
         player.vx = FIX32(MOVE_SPEED);
-        player.mirroir = FALSE ;
-        player.action = ANIM_WALK ;
+        player.mirroir = false;
+        player.action = ANIM_WALK;        
     }
     if (joy & BUTTON_DOWN) {
-        player.action = ANIM_CROUCH ;
         player.vx = FIX32(0);
-    }    
+        player.action = ANIM_CROUCH;
+    }
+    
     bool jumpDown = (joy & BUTTON_A) || (joy & BUTTON_B) || (joy & BUTTON_C);
     bool downDown = (joy & BUTTON_DOWN);
     
     if (jumpDown && !player.jumpPressed && player.onGround) {
         player.vy = FIX32(JUMP_FORCE);
         player.onGround = FALSE;
-        player.action = ANIM_JUMP ;
     }
     player.jumpPressed = jumpDown;
     
@@ -206,8 +207,8 @@ void updatePlayer() {
     }
     
     if (F32_toInt(player.x) < 0) player.x = FIX32(0);
-    if (F32_toInt(player.x) > 470) player.x = FIX32(470);
-    if (F32_toInt(player.y) > 256) player.y = FIX32(100);
+    if (F32_toInt(player.x) > (MAP_WIDTH * 8) - 42) player.x = FIX32((MAP_WIDTH * 8) - 42);
+    if (F32_toInt(player.y) > (MAP_HEIGHT * 8)) player.y = FIX32(100);
     
     s16 playerScreenX = F32_toInt(player.x);
     s16 playerScreenY = F32_toInt(player.y);
@@ -215,9 +216,9 @@ void updatePlayer() {
     s16 targetY = playerScreenY - 112 + 21;
     
     if (targetX < 0) targetX = 0;
-    if (targetX > 192) targetX = 192;
+    if (targetX > (MAP_WIDTH * 8) - 320) targetX = (MAP_WIDTH * 8) - 320;
     if (targetY < 0) targetY = 0;
-    if (targetY > 32) targetY = 32;
+    if (targetY > (MAP_HEIGHT * 8) - 224) targetY = (MAP_HEIGHT * 8) - 224;
     
     cameraX += (targetX - cameraX) / 8;
     cameraY += (targetY - cameraY) / 8;
@@ -227,13 +228,13 @@ void updatePlayer() {
     
     SPR_setPosition(player.sprite, F32_toInt(player.x) - cameraX, F32_toInt(player.y) - cameraY);
     SPR_setHFlip(player.sprite, player.mirroir); 
-    SPR_setAnim(player.sprite,player.action);  
+    SPR_setAnim(player.sprite,player.action); 
 }
 
 // Dessine la map
 void drawMap() {
-    for (u16 y = 0; y < MAPH; y++) {
-        for (u16 x = 0; x < MAPW; x++) {
+    for (u16 y = 0; y < MAP_HEIGHT; y++) {
+        for (u16 x = 0; x < MAP_WIDTH; x++) {
             u16 tile;
             switch (levelMap[y][x]) {
                 case TILE_SOLID:
