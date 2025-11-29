@@ -19,5 +19,6 @@ typedef struct {
     bullets player_bullet[MAX_BULLETS];    
 } GameState;
 
+extern u16 VDPTilesFilled;
 
 #endif // _RES_GAME_H_
