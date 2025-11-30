@@ -88,3 +88,89 @@ void bullets_update() {
     }
 }
 
+
+// enemy bullets
+void enemy_bullets_init() {
+    for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        game_state.enemy_bullet[i].active = FALSE;
+        game_state.enemy_bullet[i].sprite = NULL;
+    }
+}
+
+void enemy_bullet_shoot(s16 x,s16 y, s16 targetX, s16 targetY, s16 speed) {
+
+    char info[10];
+            sprintf(info,"%10i",targetX);
+            VDP_drawTextBG(BG_A, info, 4, 17);
+             sprintf(info,"%10i",targetY);           
+            VDP_drawTextBG(BG_A, info, 4, 18);
+
+    for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        if (!game_state.enemy_bullet[i].active) {
+            game_state.enemy_bullet[i].currentX = x;
+            game_state.enemy_bullet[i].currentY = y;
+            game_state.enemy_bullet[i].targetX = targetX;
+            game_state.enemy_bullet[i].targetY = targetY;
+            game_state.enemy_bullet[i].speed = 0.1;
+            game_state.enemy_bullet[i].active = TRUE;
+            game_state.enemy_bullet[i].isMoving = TRUE;
+            
+            if (game_state.enemy_bullet[i].sprite == NULL) {
+                game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet,
+                                                              x, y ,
+                                                              TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+               SPR_setVisibility(game_state.enemy_bullet[i].sprite, VISIBLE);                                               
+            } else {
+                SPR_setPosition(game_state.enemy_bullet[i].sprite, x, y);
+                SPR_setVisibility(game_state.enemy_bullet[i].sprite, VISIBLE);
+            }
+          
+            break;
+        }
+    }
+}
+void enemy_bullets_update() {
+
+    for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
+         if (game_state.enemy_bullet[i].active){
+            // Calculer la distance restante
+            s16 deltaX = game_state.enemy_bullet[i].targetX - game_state.enemy_bullet[i].currentX;
+            s16 deltaY = game_state.enemy_bullet[i].targetY - game_state.enemy_bullet[i].currentY;
+            
+            // Calculer la distance totale
+            s16 distance = F16_sqrt((deltaX* deltaX)+(deltaY* deltaY));
+            
+            // Vérifier si on est arrivé (seuil de 0.5 pixel)
+            if (distance < FIX16(0.5)) {
+                game_state.enemy_bullet[i].currentX = game_state.enemy_bullet[i].targetX;
+                game_state.enemy_bullet[i].currentY = game_state.enemy_bullet[i].targetY;
+                game_state.enemy_bullet[i].isMoving = FALSE;
+                game_state.enemy_bullet[i].active = FALSE;
+                SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
+            } else {
+                // Normaliser le vecteur de direction et appliquer la vitesse
+                fix16 moveX = (deltaX* game_state.enemy_bullet[i].speed)+ distance;
+                fix16 moveY = (deltaY* game_state.enemy_bullet[i].speed)+ distance;
+                
+                game_state.enemy_bullet[i].currentX = (game_state.enemy_bullet[i].currentX+ moveX);
+                game_state.enemy_bullet[i].currentY = (game_state.enemy_bullet[i].currentY+ moveY);
+            }
+            
+ 
+
+                                        // Désactiver si hors écran
+            /*
+                                        if (game_state.enemy_bullet[i].currentX > 320 || game_state.enemy_bullet[i].currentX < 0 ||
+                game_state.enemy_bullet[i].currentY > 224 || game_state.enemy_bullet[i].currentY < 0) {
+                game_state.enemy_bullet[i].active = FALSE;
+                SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
+            } else {
+             */
+                            // Mettre à jour la position du sprite
+            SPR_setPosition(game_state.enemy_bullet[i].sprite, 
+                           game_state.enemy_bullet[i].currentX, 
+                            game_state.enemy_bullet[i].currentY);
+            //}
+        }
+    }   
+}

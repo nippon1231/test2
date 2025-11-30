@@ -24,7 +24,7 @@
 
 // Variables globales
 GameState game_state;
-
+char info[10];
 Player player;
 Boss boss;
 Map* bgMap;
@@ -129,8 +129,8 @@ void initPlayer() {
 
 // Initialise le joueur
 void initBoss() {
-    boss.x = FIX32(40);
-    boss.y = FIX32(0);
+    boss.x = FIX32(200);
+    boss.y = FIX32(80);
     
     boss.sprite = SPR_addSprite(&sprite_boss, 
                                   F32_toInt(boss.x), 
@@ -146,6 +146,13 @@ void updatePlayer() {
     if(player.onGround && !player.is_shooting){
         player.action = ANIM_IDLE;
     }
+
+//si on appuie sur A
+if (joy & BUTTON_A)
+{
+ 
+}
+
     if (joy & BUTTON_LEFT) {
         player.vx = FIX32(-MOVE_SPEED);
         player.mirroir = TRUE;
@@ -317,10 +324,13 @@ int main() {
     drawMap();
     initPlayer();
     initBoss(); 
+    enemy_bullets_init();
     SPR_setAnim(boss.sprite,BANIM_IDLE);
     while (1) {
         updatePlayer();
         bullets_update();
+        enemy_bullets_update();
+        enemy_bullet_shoot(0,20,F32_toInt(player.x), F32_toInt(player.y)    , ENEMY_BULLET_SPEED);
         SPR_update();
         SYS_doVBlankProcess();
     }
