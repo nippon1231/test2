@@ -4,6 +4,7 @@
 #include "resources.h"
 #include "game.h"
 #include "bullets.h"
+#include "boss.h"
 // Constantes
 #define GRAVITY 0.4
 #define JUMP_FORCE -6.5
@@ -25,10 +26,11 @@
 GameState game_state;
 
 Player player;
+Boss boss;
 Map* bgMap;
 s16 cameraX = 0;
 s16 cameraY = 0;
-
+static u16 fire_cooldown = 0; 
 // Tile map étendue
 const u8 levelMap[MAP_HEIGHT][MAP_WIDTH] = {
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -125,12 +127,23 @@ void initPlayer() {
     player.sprite_playershoot = SPR_addSprite(&sprite_playershoot, 0, 0, TILE_ATTR(PAL0, 0, FALSE, FALSE));
 }
 
+// Initialise le joueur
+void initBoss() {
+    boss.x = FIX32(40);
+    boss.y = FIX32(0);
+    
+    boss.sprite = SPR_addSprite(&sprite_boss, 
+                                  F32_toInt(boss.x), 
+                                  F32_toInt(boss.y), 
+                                  TILE_ATTR(PAL0, 0, FALSE, FALSE));
+}
+
 // Met à jour la physique du joueur
 void updatePlayer() {
     u16 joy = JOY_readJoypad(JOY_1);
     SPR_setVisibility(player.sprite_playershoot, HIDDEN);   
     player.vx = FIX32(0);
-    if(player.onGround){
+    if(player.onGround && !player.is_shooting){
         player.action = ANIM_IDLE;
     }
     if (joy & BUTTON_LEFT) {
@@ -149,12 +162,22 @@ void updatePlayer() {
         player.vx = FIX32(0);
         player.action = ANIM_CROUCH;
     }
-    if (joy & BUTTON_C) {
- 
-        bullets_spawn(F32_toInt(player.x)-cameraX+21, F32_toInt(player.y)-cameraY+10,player.mirroir); 
+   
+    if (joy & BUTTON_C ) {
+
+        if (fire_cooldown > 0) fire_cooldown--;
+        if (fire_cooldown == 0)
+        {
+            player.is_shooting = true;
+            fire_cooldown = 10; // Délai entre les tirs
+            bullets_spawn(F32_toInt(player.x)-cameraX+21, F32_toInt(player.y)-cameraY+10,player.mirroir); 
+        }
     }   
     else {
-        SPR_setVisibility(player.sprite_playershoot, HIDDEN);    
+            if(fire_cooldown==5)
+            SPR_setVisibility(player.sprite_playershoot, HIDDEN);
+            player.is_shooting = false;
+            fire_cooldown = 0;     
     } 
     bool jump = (joy & BUTTON_B) ;
     bool downDown = ((joy & BUTTON_DOWN) && (joy & BUTTON_B));  ;
@@ -293,7 +316,8 @@ int main() {
     
     drawMap();
     initPlayer();
-    
+    initBoss(); 
+    SPR_setAnim(boss.sprite,BANIM_IDLE);
     while (1) {
         updatePlayer();
         bullets_update();

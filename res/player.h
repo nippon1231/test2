@@ -17,6 +17,7 @@ typedef struct {
     bool jumpPressed;
     bool downPressed;
     bool mirroir;
+    bool is_shooting;
     u8 action;
     Sprite* sprite;
     Sprite* sprite_bullet;
