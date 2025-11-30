@@ -123,7 +123,7 @@ void initPlayer() {
                                   F32_toInt(player.x), 
                                   F32_toInt(player.y), 
                                   TILE_ATTR(PAL0, 0, FALSE, FALSE));
-    player.sprite_bullet = SPR_addSprite(&sprite_bullet, 0, 0, TILE_ATTR(PAL0, 0, FALSE, FALSE));
+    player.sprite_bullet = SPR_addSprite(&sprite_bullet, 0, 10, TILE_ATTR(PAL0, 0, FALSE, FALSE));
     player.sprite_playershoot = SPR_addSprite(&sprite_playershoot, 0, 0, TILE_ATTR(PAL0, 0, FALSE, FALSE));
 }
 
@@ -150,7 +150,7 @@ void updatePlayer() {
 //si on appuie sur A
 if (joy & BUTTON_A)
 {
-         enemy_bullet_shoot(2,20,F32_toInt(player.x), F32_toInt(player.y), ENEMY_BULLET_SPEED);
+         enemy_bullet_shoot(2,20,player.x, player.y , ENEMY_BULLET_SPEED);
 }
 
     if (joy & BUTTON_LEFT) {

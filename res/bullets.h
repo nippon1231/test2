@@ -20,6 +20,8 @@ typedef struct {
     fix32  currentY;
     fix32 targetX;
     fix32 targetY;
+    fix32 vx;
+    fix32 vy;   
     fix32 speed;
     bool isMoving;
     bool active;

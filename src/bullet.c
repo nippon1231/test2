@@ -101,82 +101,77 @@ void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
 
 
 
+
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
         if (!game_state.enemy_bullet[i].active) {
+
             game_state.enemy_bullet[i].currentX = x;
             game_state.enemy_bullet[i].currentY = y;
-            game_state.enemy_bullet[i].targetX = (targetX);
-            game_state.enemy_bullet[i].targetY = (targetY);
-            game_state.enemy_bullet[i].speed = 0.1;
             game_state.enemy_bullet[i].active = TRUE;
-            game_state.enemy_bullet[i].isMoving = TRUE;
             
-            if (game_state.enemy_bullet[i].sprite == NULL) {
-                game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet,
-                                                              x, y ,
-                                                              TILE_ATTR(PAL0, TRUE, FALSE, FALSE));                                              
+            // Calculer le vecteur directionnel
+            s16 dx = targetX - x;
+            s16 dy = targetY - y;
+  
+                 char buffer[10];
+            sprintf(buffer, "%s: %d", "Cur X", targetX);
+            VDP_drawText(buffer, 20, 10);
+             sprintf(buffer, "%s: %d", "Cur Y", targetY);   
+            VDP_drawText(buffer, 20, 11);           
+
+            // Calculer la distance (approximation rapide pour Genesis)
+            // Utilise fix16 pour plus de précision
+            fix16 fdx = FIX16(dx);
+            fix16 fdy = FIX16(dy);
+            fix16 distance = F16_sqrt((fdx * fdx)+(fdy * fdy));
+            
+            sprintf(buffer, "%s: %d", "Cur Y", distance);   
+            VDP_drawText(buffer, 20, 13);  
+
+            // Normaliser et appliquer la vitesse
+            if (distance > FIX16(0)) {
+                fix16 speed = FIX16(game_state.enemy_bullet[i].speed);
+                 game_state.enemy_bullet[i].vx = (fdx* speed)/ distance;
+                 game_state.enemy_bullet[i].vy =(fdy* speed)/ distance;
+
+             sprintf(buffer, "%s: %d", "v X", (fdx* speed)/ distance);
+            VDP_drawText(buffer, 20, 14);
+             sprintf(buffer, "%s: %d", "v Y", game_state.enemy_bullet[i].vy);   
+            VDP_drawText(buffer, 20, 15);                    
             } else {
-                SPR_setPosition(game_state.enemy_bullet[i].sprite, x, y);
-                SPR_setVisibility(game_state.enemy_bullet[i].sprite, VISIBLE);
+                // Si cible = position de départ, tirer vers la droite par défaut
+                 game_state.enemy_bullet[i].vx = game_state.enemy_bullet[i].speed;
+                 game_state.enemy_bullet[i].vy = 0;
             }
-          
+            
+            game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet, 
+                                             game_state.enemy_bullet[i].currentX, 
+                                             game_state.enemy_bullet[i].currentY, 
+                                            TILE_ATTR(PAL0, 0, FALSE, FALSE));
             break;
-        }
+        }      
     }
 }
 void enemy_bullets_update() {
-
-
-        char info[10];
-            sprintf(info,"%10li",game_state.enemy_bullet[0].targetX);
-            VDP_drawTextBG(BG_A, info, 4, 17);
-        //     sprintf(info,"%10li",game_state.enemy_bullet[0].targetY);           
-        //    VDP_drawTextBG(BG_A, info, 4, 18);
-            sprintf(info,"%10li",game_state.enemy_bullet[0].currentX);
-            VDP_drawTextBG(BG_A, info, 4, 19);
-                sprintf(info,"%10li",game_state.enemy_bullet[0].currentY);           
-                VDP_drawTextBG(BG_A, info, 4, 20); 
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
-         if (game_state.enemy_bullet[i].active){
-            // Calculer la distance restante
-            s16 deltaX = game_state.enemy_bullet[i].targetX - game_state.enemy_bullet[i].currentX;
-            s16 deltaY = game_state.enemy_bullet[i].targetY - game_state.enemy_bullet[i].currentY;
-            
-            // Calculer la distance totale
-            s16 distance = F16_sqrt((deltaX* deltaX)+(deltaY* deltaY));
-            
-            // Vérifier si on est arrivé (seuil de 0.5 pixel)
-            if (distance < FIX16(0.5)) {
-                game_state.enemy_bullet[i].currentX = 0;
-                game_state.enemy_bullet[i].currentY = 0; 
-                game_state.enemy_bullet[i].isMoving = FALSE;
-                game_state.enemy_bullet[i].active = FALSE;
-                SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
-            } else {
-                // Normaliser le vecteur de direction et appliquer la vitesse
-                fix16 moveX = (deltaX* game_state.enemy_bullet[i].speed)+ distance;
-                fix16 moveY = (deltaY* game_state.enemy_bullet[i].speed)+ distance;             
-                game_state.enemy_bullet[i].currentX = (game_state.enemy_bullet[i].currentX+ F16_toInt(moveX));
-                game_state.enemy_bullet[i].currentY = (game_state.enemy_bullet[i].currentY+ F16_toInt(moveY));
-            }   
+        if (game_state.enemy_bullet[i].active) {
+            // Déplacer le projectile
 
-                                        // Désactiver si hors écran
+
+            game_state.enemy_bullet[i].currentX += game_state.enemy_bullet[i].vx;
+            game_state.enemy_bullet[i].currentY += game_state.enemy_bullet[i].vy;
             
-            if (game_state.enemy_bullet[i].currentX > 320 || game_state.enemy_bullet[i].currentX < 0 ||
-                game_state.enemy_bullet[i].currentY > 224 || game_state.enemy_bullet[i].currentY < 0) {
+            // Vérifier les limites de l'écran
+            if (game_state.enemy_bullet[i].currentX < 0 || game_state.enemy_bullet[i].currentX > 320 || 
+                game_state.enemy_bullet[i].currentY < 0 || game_state.enemy_bullet[i].currentY > 224) {
                 game_state.enemy_bullet[i].active = FALSE;
-                game_state.enemy_bullet[i].currentX = 0;
-                game_state.enemy_bullet[i].currentY = 0;    
-                SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
+                SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
+                game_state.enemy_bullet[i].sprite = NULL;
             } else {
-             
-                            // Mettre à jour la position du sprite
-            SPR_setPosition(game_state.enemy_bullet[i].sprite, 
-                           game_state.enemy_bullet[i].currentX,                           
-                            game_state.enemy_bullet[i].currentY
-                        );
-         
-                }
+                // Mettre à jour la position du sprite
+                SPR_setPosition(game_state.enemy_bullet[i].sprite, game_state.enemy_bullet[i].currentX, game_state.enemy_bullet[i].currentY );
+            }
         }
-    }   
+    } 
+    SPR_update();  
 }
