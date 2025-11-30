@@ -5,7 +5,7 @@
 #include "game.h"
 
 #define BULLET_SPEED 4
-#define ENEMY_BULLET_SPEED 0.2    
+#define ENEMY_BULLET_SPEED 1    
 
 typedef struct {
     fix32 x, y;
@@ -32,6 +32,6 @@ void bullets_update();
 void enemy_bullets_spawn(s16 x, s16 y,s16 s);
 void enemy_bullets_update();    
 void enemy_bullets_init();
-void enemy_bullet_shoot(fix16 x,fix16 y, fix16 targetX, fix16 targetY, fix16 speed);
+void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed);
 
 #endif // _RES_BULLETS_H_

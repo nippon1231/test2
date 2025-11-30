@@ -8,7 +8,7 @@
 #define ANIM_FIRE  3
 #define ANIM_JUMP  4
 #define MAX_BULLETS 10
-#define MAX_ENEMY_BULLETS 2
+#define MAX_ENEMY_BULLETS 1
 
 typedef struct {
  // tableau de bullets

@@ -97,20 +97,16 @@ void enemy_bullets_init() {
     }
 }
 
-void enemy_bullet_shoot(s16 x,s16 y, s16 targetX, s16 targetY, s16 speed) {
+void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
 
-    char info[10];
-            sprintf(info,"%10i",targetX);
-            VDP_drawTextBG(BG_A, info, 4, 17);
-             sprintf(info,"%10i",targetY);           
-            VDP_drawTextBG(BG_A, info, 4, 18);
+
 
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
         if (!game_state.enemy_bullet[i].active) {
             game_state.enemy_bullet[i].currentX = x;
             game_state.enemy_bullet[i].currentY = y;
-            game_state.enemy_bullet[i].targetX = targetX;
-            game_state.enemy_bullet[i].targetY = targetY;
+            game_state.enemy_bullet[i].targetX = (targetX);
+            game_state.enemy_bullet[i].targetY = (targetY);
             game_state.enemy_bullet[i].speed = 0.1;
             game_state.enemy_bullet[i].active = TRUE;
             game_state.enemy_bullet[i].isMoving = TRUE;
@@ -118,8 +114,7 @@ void enemy_bullet_shoot(s16 x,s16 y, s16 targetX, s16 targetY, s16 speed) {
             if (game_state.enemy_bullet[i].sprite == NULL) {
                 game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet,
                                                               x, y ,
-                                                              TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-               SPR_setVisibility(game_state.enemy_bullet[i].sprite, VISIBLE);                                               
+                                                              TILE_ATTR(PAL0, TRUE, FALSE, FALSE));                                              
             } else {
                 SPR_setPosition(game_state.enemy_bullet[i].sprite, x, y);
                 SPR_setVisibility(game_state.enemy_bullet[i].sprite, VISIBLE);
@@ -131,6 +126,16 @@ void enemy_bullet_shoot(s16 x,s16 y, s16 targetX, s16 targetY, s16 speed) {
 }
 void enemy_bullets_update() {
 
+
+        char info[10];
+            sprintf(info,"%10li",game_state.enemy_bullet[0].targetX);
+            VDP_drawTextBG(BG_A, info, 4, 17);
+        //     sprintf(info,"%10li",game_state.enemy_bullet[0].targetY);           
+        //    VDP_drawTextBG(BG_A, info, 4, 18);
+            sprintf(info,"%10li",game_state.enemy_bullet[0].currentX);
+            VDP_drawTextBG(BG_A, info, 4, 19);
+                sprintf(info,"%10li",game_state.enemy_bullet[0].currentY);           
+                VDP_drawTextBG(BG_A, info, 4, 20); 
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
          if (game_state.enemy_bullet[i].active){
             // Calculer la distance restante
@@ -142,35 +147,36 @@ void enemy_bullets_update() {
             
             // Vérifier si on est arrivé (seuil de 0.5 pixel)
             if (distance < FIX16(0.5)) {
-                game_state.enemy_bullet[i].currentX = game_state.enemy_bullet[i].targetX;
-                game_state.enemy_bullet[i].currentY = game_state.enemy_bullet[i].targetY;
+                game_state.enemy_bullet[i].currentX = 0;
+                game_state.enemy_bullet[i].currentY = 0; 
                 game_state.enemy_bullet[i].isMoving = FALSE;
                 game_state.enemy_bullet[i].active = FALSE;
                 SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
             } else {
                 // Normaliser le vecteur de direction et appliquer la vitesse
                 fix16 moveX = (deltaX* game_state.enemy_bullet[i].speed)+ distance;
-                fix16 moveY = (deltaY* game_state.enemy_bullet[i].speed)+ distance;
-                
-                game_state.enemy_bullet[i].currentX = (game_state.enemy_bullet[i].currentX+ moveX);
-                game_state.enemy_bullet[i].currentY = (game_state.enemy_bullet[i].currentY+ moveY);
-            }
-            
- 
+                fix16 moveY = (deltaY* game_state.enemy_bullet[i].speed)+ distance;             
+                game_state.enemy_bullet[i].currentX = (game_state.enemy_bullet[i].currentX+ F16_toInt(moveX));
+                game_state.enemy_bullet[i].currentY = (game_state.enemy_bullet[i].currentY+ F16_toInt(moveY));
+            }   
 
                                         // Désactiver si hors écran
-            /*
-                                        if (game_state.enemy_bullet[i].currentX > 320 || game_state.enemy_bullet[i].currentX < 0 ||
+            
+            if (game_state.enemy_bullet[i].currentX > 320 || game_state.enemy_bullet[i].currentX < 0 ||
                 game_state.enemy_bullet[i].currentY > 224 || game_state.enemy_bullet[i].currentY < 0) {
                 game_state.enemy_bullet[i].active = FALSE;
+                game_state.enemy_bullet[i].currentX = 0;
+                game_state.enemy_bullet[i].currentY = 0;    
                 SPR_setVisibility(game_state.enemy_bullet[i].sprite, HIDDEN);
             } else {
-             */
+             
                             // Mettre à jour la position du sprite
             SPR_setPosition(game_state.enemy_bullet[i].sprite, 
-                           game_state.enemy_bullet[i].currentX, 
-                            game_state.enemy_bullet[i].currentY);
-            //}
+                           game_state.enemy_bullet[i].currentX,                           
+                            game_state.enemy_bullet[i].currentY
+                        );
+         
+                }
         }
     }   
 }
