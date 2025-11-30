@@ -99,8 +99,31 @@ void enemy_bullets_init() {
 
 void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
 
+            // Calculer le vecteur directionnel
+            s16 dx = F32_toFix16(targetX) - (x) ;
+            s16 dy = F32_toFix16(targetY) - (y);   
+  
+                 char buffer[10];
+            sprintf(buffer, "%s: %li", "targetY", targetY );
+            VDP_drawText(buffer, 20, 8);
+             sprintf(buffer, "%s: %li", "Y",y);   
+            VDP_drawText(buffer, 20, 9);                   
+            sprintf(buffer, "%s: %li", "dX", dx);
+            VDP_drawText(buffer, 20, 10);
+             sprintf(buffer, "%s: %li", "dy", dy);   
+            VDP_drawText(buffer, 20, 11);  
 
+            fix16 fdx = FIX16(dx);
+            fix16 fdy = FIX16(dy);            
+            fix16 distance = F16_sqrt((fdx * fdx)+(fdy * fdy));
+            sprintf(buffer, "%s: %i", "fX", fdx);
+            VDP_drawText(buffer, 20, 12);
+             sprintf(buffer, "%s: %i", "fY", fdy);   
+            VDP_drawText(buffer, 20, 13);              
+            sprintf(buffer, "%s: %i", "Distance", distance);   
+            VDP_drawText(buffer, 20, 7);  
 
+    /*
 
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
         if (!game_state.enemy_bullet[i].active) {
@@ -110,23 +133,31 @@ void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
             game_state.enemy_bullet[i].active = TRUE;
             
             // Calculer le vecteur directionnel
-            s16 dx = targetX - x;
-            s16 dy = targetY - y;
+            s32 dx = targetX - (x) ;
+            s32 dy = targetY - (y);   
   
                  char buffer[10];
-            sprintf(buffer, "%s: %d", "Cur X", targetX);
+            sprintf(buffer, "%s: %li", "targetY", targetY );
+            VDP_drawText(buffer, 20, 8);
+             sprintf(buffer, "%s: %li", "Y",y);   
+            VDP_drawText(buffer, 20, 9);                   
+            sprintf(buffer, "%s: %li", "dX", dx);
             VDP_drawText(buffer, 20, 10);
-             sprintf(buffer, "%s: %d", "Cur Y", targetY);   
+             sprintf(buffer, "%s: %li", "dy", dy);   
             VDP_drawText(buffer, 20, 11);           
 
             // Calculer la distance (approximation rapide pour Genesis)
             // Utilise fix16 pour plus de précision
             fix16 fdx = FIX16(dx);
             fix16 fdy = FIX16(dy);
-            fix16 distance = F16_sqrt((fdx * fdx)+(fdy * fdy));
+                    sprintf(buffer, "%s: %i", "fdx", fdx);
+            VDP_drawText(buffer, 20, 5);
+             sprintf(buffer, "%s: %i", "fdy", fdy);   
+            VDP_drawText(buffer, 20, 6);     
+            fix32 distance = F16_sqrt((dx * dx)+(dy * dy));
             
-            sprintf(buffer, "%s: %d", "Cur Y", distance);   
-            VDP_drawText(buffer, 20, 13);  
+            sprintf(buffer, "%s: %li", "Distance", distance);   
+            VDP_drawText(buffer, 20, 7);  
 
             // Normaliser et appliquer la vitesse
             if (distance > FIX16(0)) {
@@ -134,10 +165,10 @@ void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
                  game_state.enemy_bullet[i].vx = (fdx* speed)/ distance;
                  game_state.enemy_bullet[i].vy =(fdy* speed)/ distance;
 
-             sprintf(buffer, "%s: %d", "v X", (fdx* speed)/ distance);
-            VDP_drawText(buffer, 20, 14);
-             sprintf(buffer, "%s: %d", "v Y", game_state.enemy_bullet[i].vy);   
-            VDP_drawText(buffer, 20, 15);                    
+             sprintf(buffer, "%s: %i", "vX", FIX16((fdx* speed)/ distance));
+            VDP_drawText(buffer, 20, 15);
+             sprintf(buffer, "%s: %i", "vY", FIX16((fdy* speed)/ distance));   
+            VDP_drawText(buffer, 20, 16);                    
             } else {
                 // Si cible = position de départ, tirer vers la droite par défaut
                  game_state.enemy_bullet[i].vx = game_state.enemy_bullet[i].speed;
@@ -151,6 +182,7 @@ void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
             break;
         }      
     }
+    */
 }
 void enemy_bullets_update() {
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {

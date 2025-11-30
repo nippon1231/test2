@@ -150,7 +150,7 @@ void updatePlayer() {
 //si on appuie sur A
 if (joy & BUTTON_A)
 {
-         enemy_bullet_shoot(2,20,player.x, player.y , ENEMY_BULLET_SPEED);
+         enemy_bullet_shoot(FIX32(20),FIX32(2),player.x, player.y , ENEMY_BULLET_SPEED);
 }
 
     if (joy & BUTTON_LEFT) {
@@ -329,7 +329,7 @@ int main() {
     while (1) {
         updatePlayer();
         bullets_update();
-        enemy_bullets_update();
+       // enemy_bullets_update();
 
         SPR_update();
         SYS_doVBlankProcess();
