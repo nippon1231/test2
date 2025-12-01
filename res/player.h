@@ -22,7 +22,10 @@ typedef struct {
     Sprite* sprite;
     Sprite* sprite_bullet;
     Sprite* sprite_playershoot;
+    s16 health;
 } Player;
+
+#define PLAYER_MAX_HEALTH 3
 
 
 

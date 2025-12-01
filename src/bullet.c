@@ -11,6 +11,11 @@ extern s16 cameraY;
 #define SCREEN_W 320
 #define SCREEN_H 224
 #define SPRITE_MARGIN 8
+// Player and bullet sprite sizes (pixels)
+#define PLAYER_W 42
+#define PLAYER_H 42
+#define ENEMY_BULLET_W 4
+#define ENEMY_BULLET_H 4
 
 // Integer square-root for non-negative 64-bit values. Returns floor(sqrt(x)).
 static s32 isqrt32(long long x) {
@@ -172,6 +177,39 @@ void enemy_bullets_update() {
             // Vérifier les limites de l'écran (comparer en pixels, pas en fix32)
             s32 ex = F32_toInt(game_state.enemy_bullet[i].currentX) - cameraX;
             s32 ey = F32_toInt(game_state.enemy_bullet[i].currentY) - cameraY;
+            // Collision simple AABB avec le joueur (positions écran)
+            s32 px = F32_toInt(player.x) - cameraX;
+            s32 py = F32_toInt(player.y) - cameraY;
+            if (ex < px + PLAYER_W && ex + ENEMY_BULLET_W > px && ey < py + PLAYER_H && ey + ENEMY_BULLET_H > py) {
+                // Collision détectée : désactiver la balle
+                game_state.enemy_bullet[i].active = FALSE;
+                if (game_state.enemy_bullet[i].sprite) {
+                    SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
+                    game_state.enemy_bullet[i].sprite = NULL;
+                }
+
+                // Appliquer dégâts au joueur
+                if (player.health > 0) player.health--;
+
+                // Si le joueur a encore de la vie, appliquer un knockback visuel
+                if (player.health > 0) {
+                    s32 knock = (ex < px) ? 2 : -2; // pousser vers la droite si l'impact vient de la gauche
+                    player.vx = FIX32(knock);
+                    player.vy = FIX32(-4); // petit recul vertical
+                    player.action = ANIM_CROUCH;
+                } else {
+                    // Mort : respawn au point de départ et réinitialiser la vie
+                    player.x = FIX32(40);
+                    player.y = FIX32(0);
+                    player.vx = FIX32(0);
+                    player.vy = FIX32(0);
+                    player.onGround = FALSE;
+                    player.health = PLAYER_MAX_HEALTH;
+                    player.action = ANIM_CROUCH;
+                }
+
+                continue;
+            }
             if (ex < -SPRITE_MARGIN || ex >= SCREEN_W + SPRITE_MARGIN || ey < -SPRITE_MARGIN || ey >= SCREEN_H + SPRITE_MARGIN) {
                 game_state.enemy_bullet[i].active = FALSE;
                 SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
@@ -186,46 +224,6 @@ void enemy_bullets_update() {
     SPR_update();  
 }
 
-// Draw on-screen debug information for bullets and camera
-void bullets_debug_draw() {
-    char buf[64];
-    // Camera
-    sprintf(buf, "cam: %d,%d", cameraX, cameraY);
-    VDP_drawText(buf, 1, 1);
-
-    // Player bullets
-    u16 pcount = 0;
-    s32 p_sx = 0, p_sy = 0, p_wx = 0, p_wy = 0;
-    for (u16 i = 0; i < MAX_BULLETS; i++) {
-        if (game_state.player_bullet[i].active) {
-            if (pcount == 0) {
-                p_wx = F32_toInt(game_state.player_bullet[i].x);
-                p_wy = F32_toInt(game_state.player_bullet[i].y);
-                p_sx = p_wx - cameraX;
-                p_sy = p_wy - cameraY;
-            }
-            pcount++;
-        }
-    }
-    sprintf(buf, "P:%d w(%d,%d) s(%d,%d)", pcount, p_wx, p_wy, p_sx, p_sy);
-    VDP_drawText(buf, 1, 2);
-
-    // Enemy bullets
-    u16 ecount = 0;
-    s32 e_sx = 0, e_sy = 0, e_wx = 0, e_wy = 0;
-    for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
-        if (game_state.enemy_bullet[i].active) {
-            if (ecount == 0) {
-                e_wx = F32_toInt(game_state.enemy_bullet[i].currentX);
-                e_wy = F32_toInt(game_state.enemy_bullet[i].currentY);
-                e_sx = e_wx - cameraX;
-                e_sy = e_wy - cameraY;
-            }
-            ecount++;
-        }
-    }
-    sprintf(buf, "E:%d w(%d,%d) s(%d,%d)", ecount, e_wx, e_wy, e_sx, e_sy);
-    VDP_drawText(buf, 1, 3);
-}
+// Debug drawing removed.
 
 // Camera position (defined in main.c) declared at top of file

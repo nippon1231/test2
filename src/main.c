@@ -118,6 +118,7 @@ void initPlayer() {
     player.onGround = FALSE;
     player.jumpPressed = FALSE;
     player.downPressed = FALSE;
+    player.health = PLAYER_MAX_HEALTH;
     
     player.sprite = SPR_addSprite(&sprite_player, 
                                   F32_toInt(player.x), 
@@ -129,13 +130,13 @@ void initPlayer() {
 
 // Initialise le joueur
 void initBoss() {
-    boss.x = FIX32(200);
-    boss.y = FIX32(80);
+    boss.x = FIX32(324);
+    boss.y = FIX32(90);
     
     boss.sprite = SPR_addSprite(&sprite_boss, 
                                   F32_toInt(boss.x), 
                                   F32_toInt(boss.y), 
-                                  TILE_ATTR(PAL0, 0, FALSE, FALSE));
+                                  TILE_ATTR(PAL3, 0, FALSE, FALSE));
 }
 
 // Met à jour la physique du joueur
@@ -278,6 +279,10 @@ if (joy & BUTTON_A)
     SPR_setPosition(player.sprite, F32_toInt(player.x) - cameraX, F32_toInt(player.y) - cameraY);
     SPR_setHFlip(player.sprite, player.mirroir); 
     SPR_setAnim(player.sprite,player.action); 
+    // Mettre à jour la position du boss en coordonnées écran (monde - caméra)
+    if (boss.sprite != NULL) {
+        SPR_setPosition(boss.sprite, F32_toInt(boss.x) - cameraX, F32_toInt(boss.y) - cameraY);
+    }
 }
 
 // Dessine la map
@@ -321,6 +326,8 @@ int main() {
     palette[2] = RGB24_TO_VDPCOLOR(0x00FF00);
     palette[3] = RGB24_TO_VDPCOLOR(0x80FF80);
     PAL_setPalette(PAL2, palette, CPU);
+    // Charger la palette dédiée du boss (déclarée dans resources.res)
+    PAL_setPalette(PAL3, palette_boss.data, DMA);
     
     drawMap();
     initPlayer();
@@ -331,7 +338,13 @@ int main() {
         updatePlayer();
         bullets_update();
         enemy_bullets_update();
-        bullets_debug_draw();
+        // Afficher le HUD : points de vie en haut à droite
+        {
+            char hud[32];
+            // position x en colonnes de caractères : 28 (à droite pour 320px/8=40 cols, 28 est à droite)
+            sprintf(hud, "HP:%d", player.health);
+            VDP_drawText(hud, 28, 1);
+        }
 
         SPR_update();
         SYS_doVBlankProcess();
