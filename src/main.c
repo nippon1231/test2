@@ -1,6 +1,13 @@
 // main.c - Moteur de plateforme avec sols solides et traversants pour SGDK 2.11
 
 #include <genesis.h>
+
+// Small LCG RNG for environments where <stdlib.h> is not available
+static unsigned int _rng_state = 0x12345678;
+static int my_rand(void) {
+    _rng_state = _rng_state * 1664525u + 1013904223u;
+    return (int)((_rng_state >> 16) & 0x7FFF);
+}
 #include "resources.h"
 #include "game.h"
 #include "bullets.h"
@@ -137,6 +144,7 @@ void initBoss() {
                                   F32_toInt(boss.x), 
                                   F32_toInt(boss.y), 
                                   TILE_ATTR(PAL3, 0, FALSE, FALSE));
+    boss.shoot_cooldown = 0;
 }
 
 // Met à jour la physique du joueur
@@ -151,7 +159,12 @@ void updatePlayer() {
 //si on appuie sur A (tir depuis le boss plutôt qu'une position fixe)
 if (joy & BUTTON_A)
 {
-    enemy_bullet_shoot(boss.x, boss.y, player.x, player.y, ENEMY_BULLET_SPEED);
+    enemy_bullet_shoot(boss.x+FIX32(80), boss.y+30, player.x, player.y, ENEMY_BULLET_SPEED);
+    if (boss.sprite) {
+        SPR_setAnim(boss.sprite, BANIM_FIRE_U);
+        boss.anim_timer = 12; // durée de l'animation en frames
+    }
+    boss.shoot_cooldown = 60;
 }
 
     if (joy & BUTTON_LEFT) {
@@ -338,12 +351,46 @@ int main() {
         updatePlayer();
         bullets_update();
         enemy_bullets_update();
+        // Boss automatic shooting when visible on screen
+        {
+            s32 bx = F32_toInt(boss.x) - cameraX;
+            s32 by = F32_toInt(boss.y) - cameraY;
+            // simple visibility test with margin
+            s32 margin = 32;
+            bool boss_visible = (bx >= -margin && bx < 320 + margin && by >= -margin && by < 224 + margin);
+            if (boss_visible) {
+                if (boss.shoot_cooldown > 0) boss.shoot_cooldown--;
+                else {
+                    // small random chance to fire (e.g. ~1%)
+                    if ((my_rand() % 1000) < 10) {
+                        // fire toward player
+                        enemy_bullet_shoot(boss.x+FIX32(80), boss.y+30, player.x, player.y, ENEMY_BULLET_SPEED);
+                        if (boss.sprite) {
+                            SPR_setAnim(boss.sprite, BANIM_FIRE_U);
+                            boss.anim_timer = 12;
+                        }
+                        boss.shoot_cooldown = 60; // cooldown in frames (~1s at 60fps)
+                    }
+                }
+            } else {
+                // if not visible, slowly clear cooldown
+                if (boss.shoot_cooldown > 0) boss.shoot_cooldown--;
+            }
+        }
         // Afficher le HUD : points de vie en haut à droite
         {
             char hud[32];
             // position x en colonnes de caractères : 28 (à droite pour 320px/8=40 cols, 28 est à droite)
             sprintf(hud, "HP:%d", player.health);
             VDP_drawText(hud, 28, 1);
+        }
+
+        // Gestion du timer d'animation du boss : revenir à l'animation idle quand terminé
+        if (boss.anim_timer > 0) {
+            boss.anim_timer--;
+            if (boss.anim_timer == 0) {
+                if (boss.sprite) SPR_setAnim(boss.sprite, BANIM_IDLE);
+            }
         }
 
         SPR_update();

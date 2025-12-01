@@ -16,6 +16,8 @@ typedef struct {
     Sprite* sprite;
     Sprite* sprite_bullet;
     Sprite* sprite_playershoot;
+    u16 shoot_cooldown;
+    u16 anim_timer;
 } Boss;
 
 
