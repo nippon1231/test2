@@ -241,7 +241,7 @@ if (joy & BUTTON_A)
             // conserver l'état du bouton jump (si maintenu, rester true jusqu'au relâchement)
             player.jumpPressed = jump ? TRUE : FALSE;
         } else if (checkPlatformCollision(player.x, newY, 42, TOP_COLLISION_OFFSET) && 
-                   !checkPlatformCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET)) {
+               !checkPlatformCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET)) {
             player.y = FIX32((F32_toInt(newY) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;

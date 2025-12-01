@@ -6,7 +6,7 @@
 #define BULLET_SPEED 4
 #define ENEMY_BULLET_SPEED 1    
 // Diviseur pour réduire la vitesse effective des projectiles ennemis
-#define ENEMY_BULLET_SPEED_SCALE 10
+#define ENEMY_BULLET_SPEED_SCALE 80
 
 typedef struct {
     fix32 x, y;

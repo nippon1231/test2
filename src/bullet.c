@@ -11,9 +11,8 @@ extern s16 cameraY;
 #define SCREEN_W 320
 #define SCREEN_H 224
 #define SPRITE_MARGIN 8
-// Player and bullet sprite sizes (pixels)
-#define PLAYER_W 42
-#define PLAYER_H 42
+#define ENEMY_BULLET_W 4
+#define ENEMY_BULLET_H 4
 #define ENEMY_BULLET_W 4
 #define ENEMY_BULLET_H 4
 
@@ -180,7 +179,7 @@ void enemy_bullets_update() {
             // Collision simple AABB avec le joueur (positions écran)
             s32 px = F32_toInt(player.x) - cameraX;
             s32 py = F32_toInt(player.y) - cameraY;
-            if (ex < px + PLAYER_W && ex + ENEMY_BULLET_W > px && ey < py + PLAYER_H && ey + ENEMY_BULLET_H > py) {
+            if (ex < px + PLAYER_HITBOX_W && ex + ENEMY_BULLET_W > px && ey < py + PLAYER_HITBOX_H && ey + ENEMY_BULLET_H > py) {
                 // Collision détectée : désactiver la balle
                 game_state.enemy_bullet[i].active = FALSE;
                 if (game_state.enemy_bullet[i].sprite) {

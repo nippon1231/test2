@@ -31,3 +31,7 @@ typedef struct {
 
 
 #endif // _RES_player_H_
+
+// Player hitbox size (pixels)
+#define PLAYER_HITBOX_W 32
+#define PLAYER_HITBOX_H 32
