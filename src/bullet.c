@@ -3,11 +3,42 @@
 #include "resources.h"
 #include "bullets.h"
 #include "player.h"
+// Camera position (defined in main.c)
+extern s16 cameraX;
+extern s16 cameraY;
+
+// Screen dimensions and sprite margin used for off-screen checks
+#define SCREEN_W 320
+#define SCREEN_H 224
+#define SPRITE_MARGIN 8
+
+// Integer square-root for non-negative 64-bit values. Returns floor(sqrt(x)).
+static s32 isqrt32(long long x) {
+    if (x <= 0) return 0;
+    long long lo = 0;
+    long long hi = 1LL << 16; // sqrt(2^32) ~ 65536, safe upper bound
+    long long res = 0;
+    while (lo <= hi) {
+        long long mid = (lo + hi) >> 1;
+        long long sq = mid * mid;
+        if (sq == x) return (s32)mid;
+        if (sq < x) {
+            res = mid;
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+    return (s32)res;
+}
 
 void bullets_init() {
     for (u16 i = 0; i < MAX_BULLETS; i++) {
         game_state.player_bullet[i].active = FALSE;
         game_state.player_bullet[i].sprite = NULL;
+        game_state.player_bullet[i].mirrored = FALSE;
+        game_state.player_bullet[i].x = 0;
+        game_state.player_bullet[i].y = 0;
     }
     
 }
@@ -16,32 +47,34 @@ void bullets_spawn(s16 x, s16 y,bool mirrored ) {
     for (u16 i = 0; i < MAX_BULLETS; i++) {
         if (!game_state.player_bullet[i].active) {
             player.action = ANIM_FIRE;
-            if(  player.mirroir )
-            {
-                // on ffiche ele sprite player.shoot a la position du player
-                SPR_setPosition(player.sprite_playershoot, x-38, y);
-            }
-            else {
-                // on ffiche ele sprite player.shoot a la position du player
-                SPR_setPosition(player.sprite_playershoot, x+10,y);
+            // Utiliser le paramètre `mirrored` fourni pour la direction
+            if (mirrored) {
+                SPR_setPosition(player.sprite_playershoot, x - 38, y);
+            } else {
+                SPR_setPosition(player.sprite_playershoot, x + 10, y);
             }
 
-            // on affiche le sprite
-            SPR_setHFlip(player.sprite_playershoot, player.mirroir);
-            SPR_setVisibility(player.sprite_playershoot, VISIBLE);  
+            SPR_setHFlip(player.sprite_playershoot, mirrored);
+            SPR_setVisibility(player.sprite_playershoot, VISIBLE);
 
-            game_state.player_bullet[i].x = x;
-            game_state.player_bullet[i].y = y;
+            // convert incoming screen coordinates to world coordinates
+            s32 worldX = x + cameraX;
+            s32 worldY = y + cameraY;
+            game_state.player_bullet[i].x = FIX32(worldX);
+            game_state.player_bullet[i].y = FIX32(worldY);
             game_state.player_bullet[i].active = TRUE;
-            
+            game_state.player_bullet[i].mirrored = mirrored;
+
+            // create sprite at screen coordinates (world - camera)
+            s32 sx = F32_toInt(game_state.player_bullet[i].x) - cameraX;
+            s32 sy = F32_toInt(game_state.player_bullet[i].y) - cameraY;
             if (game_state.player_bullet[i].sprite == NULL) {
                 game_state.player_bullet[i].sprite = SPR_addSprite(&sprite_bullet,
-                                                              x, y,
+                                                              sx, sy,
                                                               TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
             } else {
-                SPR_setPosition(game_state.player_bullet[i].sprite, game_state.player_bullet[i].x, game_state.player_bullet[i].y);
+                SPR_setPosition(game_state.player_bullet[i].sprite, sx, sy);
                 SPR_setVisibility(game_state.player_bullet[i].sprite, VISIBLE);
-                game_state.player_bullet[i].mirrored = mirrored;
             }
             SPR_setHFlip(game_state.player_bullet[i].sprite, game_state.player_bullet[i].mirrored);
             break;
@@ -52,37 +85,23 @@ void bullets_spawn(s16 x, s16 y,bool mirrored ) {
 void bullets_update() {
     for (u16 i = 0; i < MAX_BULLETS; i++) {
         if (game_state.player_bullet[i].active) {
-            if(game_state.player_bullet[i].mirrored){
-                game_state.player_bullet[i].x -= BULLET_SPEED;
-                if (game_state.player_bullet[i].x <0) {
-                    game_state.player_bullet[i].active = FALSE;
-                    SPR_setVisibility(game_state.player_bullet[i].sprite, HIDDEN);
-                } else {
-                    SPR_setPosition(game_state.player_bullet[i].sprite,
-                                game_state.player_bullet[i].x,
-                                game_state.player_bullet[i].y);
-                }
-            }                
-            else {
-                game_state.player_bullet[i].x += BULLET_SPEED;
-                if (game_state.player_bullet[i].x > 320) {
-                    game_state.player_bullet[i].active = FALSE;
-                    SPR_setVisibility(game_state.player_bullet[i].sprite, HIDDEN);
-                } else {
-                    SPR_setPosition(game_state.player_bullet[i].sprite,
-                                game_state.player_bullet[i].x,
-                                game_state.player_bullet[i].y);
-                }
+            // Mettre à jour la position monde (fix32) selon la direction
+            if (game_state.player_bullet[i].mirrored) {
+                game_state.player_bullet[i].x = game_state.player_bullet[i].x - FIX32(BULLET_SPEED);
+            } else {
+                game_state.player_bullet[i].x = game_state.player_bullet[i].x + FIX32(BULLET_SPEED);
             }
-            
-            // Désactiver si hors écran
-            if (game_state.player_bullet[i].x > 320) {
+
+            // Calculer position écran
+            s32 sx = F32_toInt(game_state.player_bullet[i].x) - cameraX;
+            s32 sy = F32_toInt(game_state.player_bullet[i].y) - cameraY;
+
+            // Désactiver si hors écran (comparer avec marge pour tenir compte de la taille du sprite)
+            if (sx < -SPRITE_MARGIN || sx >= SCREEN_W + SPRITE_MARGIN) {
                 game_state.player_bullet[i].active = FALSE;
                 SPR_setVisibility(game_state.player_bullet[i].sprite, HIDDEN);
             } else {
-                SPR_setPosition(game_state.player_bullet[i].sprite,
-                              game_state.player_bullet[i].x,
-                              game_state.player_bullet[i].y);
+                SPR_setPosition(game_state.player_bullet[i].sprite, sx, sy);
             }
         }
     }
@@ -99,31 +118,7 @@ void enemy_bullets_init() {
 
 void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
 
-            // Calculer le vecteur directionnel
-            s16 dx = F32_toFix16(targetX) - (x) ;
-            s16 dy = F32_toFix16(targetY) - (y);   
-  
-                 char buffer[10];
-            sprintf(buffer, "%s: %li", "targetY", targetY );
-            VDP_drawText(buffer, 20, 8);
-             sprintf(buffer, "%s: %li", "Y",y);   
-            VDP_drawText(buffer, 20, 9);                   
-            sprintf(buffer, "%s: %li", "dX", dx);
-            VDP_drawText(buffer, 20, 10);
-             sprintf(buffer, "%s: %li", "dy", dy);   
-            VDP_drawText(buffer, 20, 11);  
 
-            fix16 fdx = FIX16(dx);
-            fix16 fdy = FIX16(dy);            
-            fix16 distance = F16_sqrt((fdx * fdx)+(fdy * fdy));
-            sprintf(buffer, "%s: %i", "fX", fdx);
-            VDP_drawText(buffer, 20, 12);
-             sprintf(buffer, "%s: %i", "fY", fdy);   
-            VDP_drawText(buffer, 20, 13);              
-            sprintf(buffer, "%s: %i", "Distance", distance);   
-            VDP_drawText(buffer, 20, 7);  
-
-    /*
 
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
         if (!game_state.enemy_bullet[i].active) {
@@ -132,57 +127,38 @@ void enemy_bullet_shoot(s32 x,s32 y, s32 targetX, s32 targetY, s16 speed) {
             game_state.enemy_bullet[i].currentY = y;
             game_state.enemy_bullet[i].active = TRUE;
             
-            // Calculer le vecteur directionnel
-            s32 dx = targetX - (x) ;
-            s32 dy = targetY - (y);   
-  
-                 char buffer[10];
-            sprintf(buffer, "%s: %li", "targetY", targetY );
-            VDP_drawText(buffer, 20, 8);
-             sprintf(buffer, "%s: %li", "Y",y);   
-            VDP_drawText(buffer, 20, 9);                   
-            sprintf(buffer, "%s: %li", "dX", dx);
-            VDP_drawText(buffer, 20, 10);
-             sprintf(buffer, "%s: %li", "dy", dy);   
-            VDP_drawText(buffer, 20, 11);           
+                // Calculer le vecteur directionnel (en pixels)
+                s32 dx_pixels = F32_toInt(targetX) - F32_toInt(x);
+                s32 dy_pixels = F32_toInt(targetY) - F32_toInt(y);
+                bool mirrored = (dx_pixels < 0);
 
-            // Calculer la distance (approximation rapide pour Genesis)
-            // Utilise fix16 pour plus de précision
-            fix16 fdx = FIX16(dx);
-            fix16 fdy = FIX16(dy);
-                    sprintf(buffer, "%s: %i", "fdx", fdx);
-            VDP_drawText(buffer, 20, 5);
-             sprintf(buffer, "%s: %i", "fdy", fdy);   
-            VDP_drawText(buffer, 20, 6);     
-            fix32 distance = F16_sqrt((dx * dx)+(dy * dy));
-            
-            sprintf(buffer, "%s: %li", "Distance", distance);   
-            VDP_drawText(buffer, 20, 7);  
+                /* Distance en pixels computed as integer sqrt of dx^2+dy^2 */
+                long long dist_sq = (long long)dx_pixels * (long long)dx_pixels + (long long)dy_pixels * (long long)dy_pixels;
+                s32 dist = isqrt32(dist_sq);
 
-            // Normaliser et appliquer la vitesse
-            if (distance > FIX16(0)) {
-                fix16 speed = FIX16(game_state.enemy_bullet[i].speed);
-                 game_state.enemy_bullet[i].vx = (fdx* speed)/ distance;
-                 game_state.enemy_bullet[i].vy =(fdy* speed)/ distance;
-
-             sprintf(buffer, "%s: %i", "vX", FIX16((fdx* speed)/ distance));
-            VDP_drawText(buffer, 20, 15);
-             sprintf(buffer, "%s: %i", "vY", FIX16((fdy* speed)/ distance));   
-            VDP_drawText(buffer, 20, 16);                    
+            // Normaliser et appliquer la vitesse (calcul en pixels puis conversion en fix32)
+            if (dist > 0) {
+                // Appliquer un facteur de réduction configuré via ENEMY_BULLET_SPEED_SCALE
+                long long denom = (long long)dist * (long long)ENEMY_BULLET_SPEED_SCALE;
+                s32 vx_fixed = (s32)((((long long)dx_pixels * (long long)speed) << 16) / denom);
+                s32 vy_fixed = (s32)((((long long)dy_pixels * (long long)speed) << 16) / denom);
+                game_state.enemy_bullet[i].vx = vx_fixed;
+                game_state.enemy_bullet[i].vy = vy_fixed;
             } else {
-                // Si cible = position de départ, tirer vers la droite par défaut
-                 game_state.enemy_bullet[i].vx = game_state.enemy_bullet[i].speed;
-                 game_state.enemy_bullet[i].vy = 0;
+                /* cible au même pixel -> tirer à droite */
+                game_state.enemy_bullet[i].vx = ((s32)speed) << 16;
+                game_state.enemy_bullet[i].vy = 0;
             }
             
-            game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet, 
-                                             game_state.enemy_bullet[i].currentX, 
-                                             game_state.enemy_bullet[i].currentY, 
+            game_state.enemy_bullet[i].mirrored = mirrored;
+            game_state.enemy_bullet[i].sprite = SPR_addSprite(&sprite_bullet,
+                                             F32_toInt(game_state.enemy_bullet[i].currentX) - cameraX,
+                                             F32_toInt(game_state.enemy_bullet[i].currentY) - cameraY,
                                             TILE_ATTR(PAL0, 0, FALSE, FALSE));
+            SPR_setHFlip(game_state.enemy_bullet[i].sprite, mirrored);
             break;
         }      
     }
-    */
 }
 void enemy_bullets_update() {
     for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
@@ -193,17 +169,63 @@ void enemy_bullets_update() {
             game_state.enemy_bullet[i].currentX += game_state.enemy_bullet[i].vx;
             game_state.enemy_bullet[i].currentY += game_state.enemy_bullet[i].vy;
             
-            // Vérifier les limites de l'écran
-            if (game_state.enemy_bullet[i].currentX < 0 || game_state.enemy_bullet[i].currentX > 320 || 
-                game_state.enemy_bullet[i].currentY < 0 || game_state.enemy_bullet[i].currentY > 224) {
+            // Vérifier les limites de l'écran (comparer en pixels, pas en fix32)
+            s32 ex = F32_toInt(game_state.enemy_bullet[i].currentX) - cameraX;
+            s32 ey = F32_toInt(game_state.enemy_bullet[i].currentY) - cameraY;
+            if (ex < -SPRITE_MARGIN || ex >= SCREEN_W + SPRITE_MARGIN || ey < -SPRITE_MARGIN || ey >= SCREEN_H + SPRITE_MARGIN) {
                 game_state.enemy_bullet[i].active = FALSE;
                 SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
                 game_state.enemy_bullet[i].sprite = NULL;
             } else {
-                // Mettre à jour la position du sprite
-                SPR_setPosition(game_state.enemy_bullet[i].sprite, game_state.enemy_bullet[i].currentX, game_state.enemy_bullet[i].currentY );
+                // Mettre à jour la position du sprite et appliquer flip
+                SPR_setPosition(game_state.enemy_bullet[i].sprite, ex, ey );
+                SPR_setHFlip(game_state.enemy_bullet[i].sprite, game_state.enemy_bullet[i].mirrored);
             }
         }
     } 
     SPR_update();  
 }
+
+// Draw on-screen debug information for bullets and camera
+void bullets_debug_draw() {
+    char buf[64];
+    // Camera
+    sprintf(buf, "cam: %d,%d", cameraX, cameraY);
+    VDP_drawText(buf, 1, 1);
+
+    // Player bullets
+    u16 pcount = 0;
+    s32 p_sx = 0, p_sy = 0, p_wx = 0, p_wy = 0;
+    for (u16 i = 0; i < MAX_BULLETS; i++) {
+        if (game_state.player_bullet[i].active) {
+            if (pcount == 0) {
+                p_wx = F32_toInt(game_state.player_bullet[i].x);
+                p_wy = F32_toInt(game_state.player_bullet[i].y);
+                p_sx = p_wx - cameraX;
+                p_sy = p_wy - cameraY;
+            }
+            pcount++;
+        }
+    }
+    sprintf(buf, "P:%d w(%d,%d) s(%d,%d)", pcount, p_wx, p_wy, p_sx, p_sy);
+    VDP_drawText(buf, 1, 2);
+
+    // Enemy bullets
+    u16 ecount = 0;
+    s32 e_sx = 0, e_sy = 0, e_wx = 0, e_wy = 0;
+    for (u16 i = 0; i < MAX_ENEMY_BULLETS; i++) {
+        if (game_state.enemy_bullet[i].active) {
+            if (ecount == 0) {
+                e_wx = F32_toInt(game_state.enemy_bullet[i].currentX);
+                e_wy = F32_toInt(game_state.enemy_bullet[i].currentY);
+                e_sx = e_wx - cameraX;
+                e_sy = e_wy - cameraY;
+            }
+            ecount++;
+        }
+    }
+    sprintf(buf, "E:%d w(%d,%d) s(%d,%d)", ecount, e_wx, e_wy, e_sx, e_sy);
+    VDP_drawText(buf, 1, 3);
+}
+
+// Camera position (defined in main.c) declared at top of file

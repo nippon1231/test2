@@ -147,10 +147,10 @@ void updatePlayer() {
         player.action = ANIM_IDLE;
     }
 
-//si on appuie sur A
+//si on appuie sur A (tir depuis le boss plutôt qu'une position fixe)
 if (joy & BUTTON_A)
 {
-         enemy_bullet_shoot(FIX32(20),FIX32(2),player.x, player.y , ENEMY_BULLET_SPEED);
+    enemy_bullet_shoot(boss.x, boss.y, player.x, player.y, ENEMY_BULLET_SPEED);
 }
 
     if (joy & BUTTON_LEFT) {
@@ -161,7 +161,7 @@ if (joy & BUTTON_A)
     }
     if (joy & BUTTON_RIGHT) {
         player.vx = FIX32(MOVE_SPEED);
-        player.mirroir = false;
+        player.mirroir = FALSE;
         if(!player.jumpPressed && player.onGround)
             player.action = ANIM_WALK;        
     }
@@ -170,28 +170,25 @@ if (joy & BUTTON_A)
         player.action = ANIM_CROUCH;
     }
    
-    if (joy & BUTTON_C ) {
-
+    if (joy & BUTTON_C) {
         if (fire_cooldown > 0) fire_cooldown--;
-        if (fire_cooldown == 0)
-        {
-            player.is_shooting = true;
+        if (fire_cooldown == 0) {
+            player.is_shooting = TRUE;
             fire_cooldown = 10; // Délai entre les tirs
-            bullets_spawn(F32_toInt(player.x)-cameraX+21, F32_toInt(player.y)-cameraY+10,player.mirroir); 
+            bullets_spawn(F32_toInt(player.x) - cameraX + 21, F32_toInt(player.y) - cameraY + 10, player.mirroir);
         }
-    }   
-    else {
-            if(fire_cooldown==5)
-            SPR_setVisibility(player.sprite_playershoot, HIDDEN);
-            player.is_shooting = false;
-            fire_cooldown = 0;     
-    } 
-    bool jump = (joy & BUTTON_B) ;
-    bool downDown = ((joy & BUTTON_DOWN) && (joy & BUTTON_B));  ;
-    player.jumpPressed = false;
-    if (jump && !player.jumpPressed && player.onGround) {
-        if(player.action != ANIM_CROUCH)
-        {
+    } else {
+        if (fire_cooldown == 5) SPR_setVisibility(player.sprite_playershoot, HIDDEN);
+        player.is_shooting = FALSE;
+        fire_cooldown = 0;
+    }
+
+    bool jump = (joy & BUTTON_B);
+    bool downDown = ((joy & BUTTON_DOWN) && (joy & BUTTON_B));
+    bool prevJump = player.jumpPressed;
+
+    if (jump && !prevJump && player.onGround) {
+        if (player.action != ANIM_CROUCH) {
             player.vy = FIX32(JUMP_FORCE);
             player.onGround = FALSE;
             player.action = ANIM_JUMP;
@@ -227,13 +224,14 @@ if (joy & BUTTON_A)
             player.y = FIX32((F32_toInt(player.y) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
-            player.jumpPressed = TRUE;
+            // conserver l'état du bouton jump (si maintenu, rester true jusqu'au relâchement)
+            player.jumpPressed = jump ? TRUE : FALSE;
         } else if (checkPlatformCollision(player.x, newY, 42, TOP_COLLISION_OFFSET) && 
                    !checkPlatformCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET)) {
             player.y = FIX32((F32_toInt(newY) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
-            player.jumpPressed = TRUE;
+            player.jumpPressed = jump ? TRUE : FALSE;
         } else {
             player.y = newY;
             player.onGround = FALSE;
@@ -246,6 +244,9 @@ if (joy & BUTTON_A)
             player.onGround = FALSE;
         }
     }
+
+    // Clear jumpPressed when button released (edge detection)
+    if (!jump) player.jumpPressed = FALSE;
     
     if (player.onGround) {
         if (!checkSolidCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET) && 
@@ -329,7 +330,8 @@ int main() {
     while (1) {
         updatePlayer();
         bullets_update();
-       // enemy_bullets_update();
+        enemy_bullets_update();
+        bullets_debug_draw();
 
         SPR_update();
         SYS_doVBlankProcess();

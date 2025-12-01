@@ -18,4 +18,4 @@ out/src/main.o: src/main.c c:/sgdk/inc/genesis.h c:/sgdk/inc/types.h \
  c:/sgdk/inc/types.h c:/sgdk/inc/ext/flash-save/saveman.h \
  c:/sgdk/inc/ext/console.h c:/sgdk/inc/config.h c:/sgdk/inc/string.h \
  c:/sgdk/inc/maths.h c:/sgdk/inc/dma.h res/resources.h res/game.h \
- res/player.h res/bullets.h res/game.h res/bullets.h res/boss.h
+ res/player.h res/bullets.h res/bullets.h res/boss.h
