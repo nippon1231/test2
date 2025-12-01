@@ -18,9 +18,12 @@ typedef struct {
     Sprite* sprite_playershoot;
     u16 shoot_cooldown;
     u16 anim_timer;
+    s16 health;
+    bool alive;
+    s16 shake_timer;
 } Boss;
 
 
 
 
-#endif // _RES_player_H_
+#endif // _RES_boss_H_

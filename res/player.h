@@ -1,4 +1,5 @@
 #include <genesis.h>
+#include "inc/config.h"
 
 #ifndef _RES_player_H_
 #define _RES_player_H_
@@ -25,13 +26,4 @@ typedef struct {
     s16 health;
 } Player;
 
-#define PLAYER_MAX_HEALTH 3
-
-
-
-
 #endif // _RES_player_H_
-
-// Player hitbox size (pixels)
-#define PLAYER_HITBOX_W 32
-#define PLAYER_HITBOX_H 32

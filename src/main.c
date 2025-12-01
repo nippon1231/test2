@@ -145,6 +145,8 @@ void initBoss() {
                                   F32_toInt(boss.y), 
                                   TILE_ATTR(PAL3, 0, FALSE, FALSE));
     boss.shoot_cooldown = 0;
+    boss.health = BOSS_MAX_HEALTH;
+    boss.alive = TRUE;
 }
 
 // Met à jour la physique du joueur
@@ -294,7 +296,15 @@ if (joy & BUTTON_A)
     SPR_setAnim(player.sprite,player.action); 
     // Mettre à jour la position du boss en coordonnées écran (monde - caméra)
     if (boss.sprite != NULL) {
-        SPR_setPosition(boss.sprite, F32_toInt(boss.x) - cameraX, F32_toInt(boss.y) - cameraY);
+        s32 bx = F32_toInt(boss.x) - cameraX;
+        s32 by = F32_toInt(boss.y) - cameraY;
+        // apply shake if active
+        if (boss.shake_timer > 0) {
+            s32 shake = (my_rand() % 7) - 3; // -3..+3 pixels
+            bx += shake;
+            boss.shake_timer--;
+        }
+        SPR_setPosition(boss.sprite, bx, by);
     }
 }
 
@@ -359,17 +369,29 @@ int main() {
             s32 margin = 32;
             bool boss_visible = (bx >= -margin && bx < 320 + margin && by >= -margin && by < 224 + margin);
             if (boss_visible) {
-                if (boss.shoot_cooldown > 0) boss.shoot_cooldown--;
-                else {
-                    // small random chance to fire (e.g. ~1%)
-                    if ((my_rand() % 1000) < 10) {
-                        // fire toward player
-                        enemy_bullet_shoot(boss.x+FIX32(80), boss.y+30, player.x, player.y, ENEMY_BULLET_SPEED);
-                        if (boss.sprite) {
-                            SPR_setAnim(boss.sprite, BANIM_FIRE_U);
-                            boss.anim_timer = 12;
+                if (boss.alive) {
+                    if (boss.shoot_cooldown > 0) boss.shoot_cooldown--;
+                    else {
+                        // small random chance to fire (e.g. ~1%)
+                        if ((my_rand() % 1000) < 10) {
+                            // fire toward player
+                            enemy_bullet_shoot(boss.x+FIX32(80), boss.y+30, player.x, player.y, ENEMY_BULLET_SPEED);
+                            if (boss.sprite) {
+                                SPR_setAnim(boss.sprite, BANIM_FIRE_U);
+                                boss.anim_timer = 12;
+                            }
+                            boss.shoot_cooldown = 60; // cooldown in frames (~1s at 60fps)
                         }
-                        boss.shoot_cooldown = 60; // cooldown in frames (~1s at 60fps)
+                    }
+                    // small random chance to play a crouch animation when idle (non-interrupting)
+                    if (boss.anim_timer == 0) {
+                        // ~2% chance per frame
+                        if ((my_rand() % 1000) < 20) {
+                            if (boss.sprite) {
+                                SPR_setAnim(boss.sprite, BANIM_CROUCH);
+                                boss.anim_timer = 48; // duration of the crouch animation in frames (~0.8s)
+                            }
+                        }
                     }
                 }
             } else {
@@ -383,6 +405,13 @@ int main() {
             // position x en colonnes de caractères : 28 (à droite pour 320px/8=40 cols, 28 est à droite)
             sprintf(hud, "HP:%d", player.health);
             VDP_drawText(hud, 28, 1);
+            // afficher la vie du boss sous celle du player
+            if (boss.alive) {
+                sprintf(hud, "BOSS:%d", boss.health);
+            } else {
+                sprintf(hud, "BOSS:0");
+            }
+            VDP_drawText(hud, 28, 2);
         }
 
         // Gestion du timer d'animation du boss : revenir à l'animation idle quand terminé

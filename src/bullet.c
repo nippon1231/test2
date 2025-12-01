@@ -3,18 +3,21 @@
 #include "resources.h"
 #include "bullets.h"
 #include "player.h"
+#include "boss.h"
 // Camera position (defined in main.c)
 extern s16 cameraX;
 extern s16 cameraY;
-
+// Boss instance (defined in main.c)
+extern Boss boss;
 // Screen dimensions and sprite margin used for off-screen checks
 #define SCREEN_W 320
 #define SCREEN_H 224
 #define SPRITE_MARGIN 8
 #define ENEMY_BULLET_W 4
 #define ENEMY_BULLET_H 4
-#define ENEMY_BULLET_W 4
-#define ENEMY_BULLET_H 4
+// Player bullet size (approx)
+#define PLAYER_BULLET_W 4
+#define PLAYER_BULLET_H 4
 
 // Integer square-root for non-negative 64-bit values. Returns floor(sqrt(x)).
 static s32 isqrt32(long long x) {
@@ -100,6 +103,39 @@ void bullets_update() {
             s32 sx = F32_toInt(game_state.player_bullet[i].x) - cameraX;
             s32 sy = F32_toInt(game_state.player_bullet[i].y) - cameraY;
 
+            // Check collision with boss in world coordinates
+            if (boss.alive && boss.sprite != NULL) {
+                s32 bulletWorldX = F32_toInt(game_state.player_bullet[i].x);
+                s32 bulletWorldY = F32_toInt(game_state.player_bullet[i].y);
+                s32 bossWorldX = F32_toInt(boss.x);
+                s32 bossWorldY = F32_toInt(boss.y);
+                if (bulletWorldX < bossWorldX + BOSS_HITBOX_W && bulletWorldX + PLAYER_BULLET_W > bossWorldX
+                    && bulletWorldY < bossWorldY + BOSS_HITBOX_H && bulletWorldY + PLAYER_BULLET_H > bossWorldY) {
+                    // bullet hits boss
+                    game_state.player_bullet[i].active = FALSE;
+                    if (game_state.player_bullet[i].sprite) {
+                        SPR_releaseSprite(game_state.player_bullet[i].sprite);
+                        game_state.player_bullet[i].sprite = NULL;
+                    }
+                    // apply damage
+                    if (boss.health > 0) boss.health--;
+                    if (boss.health > 0) {
+                        if (boss.sprite) {
+                            SPR_setAnim(boss.sprite, BANIM_CROUCH);
+                            boss.anim_timer = 30;
+                        }
+                        boss.shake_timer = 12; // shake for 12 frames
+                    } else {
+                        // boss defeated
+                        boss.alive = FALSE;
+                        if (boss.sprite) {
+                            SPR_releaseSprite(boss.sprite);
+                            boss.sprite = NULL;
+                        }
+                    }
+                    continue; // next bullet
+                }
+            }
             // Désactiver si hors écran (comparer avec marge pour tenir compte de la taille du sprite)
             if (sx < -SPRITE_MARGIN || sx >= SCREEN_W + SPRITE_MARGIN) {
                 game_state.player_bullet[i].active = FALSE;
