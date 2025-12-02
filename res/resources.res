@@ -1,6 +1,6 @@
-SPRITE sprite_player "sprites/player.png" 6 6 FAST 5
+SPRITE sprite_player "sprites/player.png" 6 6 FAST 15
 PALETTE palette_main "sprites/player.png"
-SPRITE sprite_boss "sprites/boss1.png" 22 12 FAST 5
+SPRITE sprite_boss "sprites/boss1.png" 22 12 FAST 20
 PALETTE palette_boss "sprites/boss1.png"
 
 
