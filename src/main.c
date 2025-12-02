@@ -329,6 +329,9 @@ void drawMap() {
     }
 }
 
+
+
+
 int main() {
     VDP_setScreenWidth320();
     PAL_setPalette(PAL0,palette_main.data,DMA);

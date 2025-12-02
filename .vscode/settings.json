@@ -2,5 +2,6 @@
     "files.associations": {
         "*.cold": "c",
         "game.h": "c"
-    }
+    },
+    "ollama.model": "qwen3-coder:30b"
 }
