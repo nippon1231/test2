@@ -9,7 +9,7 @@
 #define ANIM_CROUCH  2
 #define ANIM_FIRE  3
 #define ANIM_JUMP  4
-
+#define ANIM_HIT  6
 // États du joueur
 typedef struct {
     fix32 x, y;

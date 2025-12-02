@@ -222,16 +222,16 @@ void enemy_bullets_update() {
                     SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
                     game_state.enemy_bullet[i].sprite = NULL;
                 }
-
+                player.action = ANIM_HIT;
+                SPR_setAnim(player.sprite, player.action);
                 // Appliquer dégâts au joueur
                 if (player.health > 0) player.health--;
-
                 // Si le joueur a encore de la vie, appliquer un knockback visuel
                 if (player.health > 0) {
                     s32 knock = (ex < px) ? 2 : -2; // pousser vers la droite si l'impact vient de la gauche
                     player.vx = FIX32(knock);
                     player.vy = FIX32(-4); // petit recul vertical
-                    player.action = ANIM_CROUCH;
+
                 } else {
                     // Mort : respawn au point de départ et réinitialiser la vie
                     player.x = FIX32(40);
