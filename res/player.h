@@ -20,6 +20,7 @@ typedef struct {
     bool mirroir;
     bool is_shooting;
     u8 action;
+    u16 anim_timer;
     Sprite* sprite;
     Sprite* sprite_bullet;
     Sprite* sprite_playershoot;

@@ -7,6 +7,8 @@
 #define ANIM_CROUCH  2
 #define ANIM_FIRE  3
 #define ANIM_JUMP  4
+#define ANIM_DEATH  5
+#define ANIM_HIT  6
 #define MAX_BULLETS 10
 #define MAX_ENEMY_BULLETS 1
 

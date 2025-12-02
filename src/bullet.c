@@ -1,4 +1,5 @@
 #include <genesis.h>
+#include "config.h"
 #include "game.h"
 #include "resources.h"
 #include "bullets.h"
@@ -212,35 +213,42 @@ void enemy_bullets_update() {
             // Vérifier les limites de l'écran (comparer en pixels, pas en fix32)
             s32 ex = F32_toInt(game_state.enemy_bullet[i].currentX) - cameraX;
             s32 ey = F32_toInt(game_state.enemy_bullet[i].currentY) - cameraY;
-            // Collision simple AABB avec le joueur (positions écran)
-            s32 px = F32_toInt(player.x) - cameraX;
-            s32 py = F32_toInt(player.y) - cameraY;
-            if (ex < px + PLAYER_HITBOX_W && ex + ENEMY_BULLET_W > px && ey < py + PLAYER_HITBOX_H && ey + ENEMY_BULLET_H > py) {
+            // Collision simple AABB avec le joueur (positions écran avec offset d'affichage)
+            s32 px = F32_toInt(player.x) - cameraX + PLAYER_HITBOX_OFFSET_X;
+            // Ajuster la hitbox selon l'état du joueur
+            s32 hitboxH, offsetY;
+            if (player.action == ANIM_CROUCH) {
+                hitboxH = PLAYER_HITBOX_H_CROUCH;
+                offsetY = PLAYER_HITBOX_OFFSET_Y + 12; // décalage plus bas quand accroupi
+            } else {
+                hitboxH = PLAYER_HITBOX_H;
+                offsetY = PLAYER_HITBOX_OFFSET_Y;
+            }
+            s32 py = F32_toInt(player.y) - cameraY + offsetY;
+            if (ex < px + PLAYER_HITBOX_W && ex + ENEMY_BULLET_W > px && ey < py + hitboxH && ey + ENEMY_BULLET_H > py) {
                 // Collision détectée : désactiver la balle
                 game_state.enemy_bullet[i].active = FALSE;
                 if (game_state.enemy_bullet[i].sprite) {
                     SPR_releaseSprite(game_state.enemy_bullet[i].sprite);
                     game_state.enemy_bullet[i].sprite = NULL;
                 }
-                player.action = ANIM_HIT;
-                SPR_setAnim(player.sprite, player.action);
                 // Appliquer dégâts au joueur
                 if (player.health > 0) player.health--;
-                // Si le joueur a encore de la vie, appliquer un knockback visuel
+                
+                // Si le joueur a encore de la vie, appliquer un knockback visuel et animation hit
                 if (player.health > 0) {
+                    player.action = ANIM_HIT;
+                    player.anim_timer = 20; // Durée de l'animation hit en frames
+                    SPR_setAnim(player.sprite, player.action);
                     s32 knock = (ex < px) ? 2 : -2; // pousser vers la droite si l'impact vient de la gauche
                     player.vx = FIX32(knock);
                     player.vy = FIX32(-4); // petit recul vertical
-
                 } else {
-                    // Mort : respawn au point de départ et réinitialiser la vie
-                    player.x = FIX32(40);
-                    player.y = FIX32(0);
-                    player.vx = FIX32(0);
-                    player.vy = FIX32(0);
-                    player.onGround = FALSE;
-                    player.health = PLAYER_MAX_HEALTH;
-                    player.action = ANIM_CROUCH;
+                    // Mort : jouer l'animation de mort puis respawn
+                    player.action = ANIM_DEATH;
+                    player.anim_timer = 25; // Durée de l'animation de mort en frames
+                    SPR_setAnim(player.sprite, player.action);
+                    // Le respawn sera fait à la fin de l'animation dans updatePlayer
                 }
 
                 continue;

@@ -1,6 +1,7 @@
 // main.c - Moteur de plateforme avec sols solides et traversants pour SGDK 2.11
 
 #include <genesis.h>
+#include "config.h"
 
 // Small LCG RNG for environments where <stdlib.h> is not available
 static unsigned int _rng_state = 0x12345678;
@@ -12,21 +13,7 @@ static int my_rand(void) {
 #include "game.h"
 #include "bullets.h"
 #include "boss.h"
-// Constantes
-#define GRAVITY 0.4
-#define JUMP_FORCE -6.5
-#define MOVE_SPEED 2
-#define MAX_FALL_SPEED 15
 
-// Dimensions de la map
-#define MAP_WIDTH 64
-#define MAP_HEIGHT 36
-
-// Types de tiles
-#define TILE_EMPTY 0
-#define TILE_SOLID 1
-#define TILE_PLATFORM 2
-#define  TOP_COLLISION_OFFSET 42
 
 
 // Variables globales
@@ -34,7 +21,6 @@ GameState game_state;
 char info[10];
 Player player;
 Boss boss;
-Map* bgMap;
 s16 cameraX = 0;
 s16 cameraY = 0;
 static u16 fire_cooldown = 0; 
@@ -126,6 +112,7 @@ void initPlayer() {
     player.jumpPressed = FALSE;
     player.downPressed = FALSE;
     player.health = PLAYER_MAX_HEALTH;
+    player.anim_timer = 0;
     
     player.sprite = SPR_addSprite(&sprite_player, 
                                   F32_toInt(player.x), 
@@ -153,6 +140,26 @@ void initBoss() {
 void updatePlayer() {
     u16 joy = JOY_readJoypad(JOY_1);
     SPR_setVisibility(player.sprite_playershoot, HIDDEN);   
+    
+    // Gérer le timer d'animation
+    if (player.anim_timer > 0) {
+        player.anim_timer--;
+        if (player.anim_timer == 0) {
+            // Si c'était l'animation de mort, faire le respawn maintenant
+            if (player.action == ANIM_DEATH) {
+                player.x = FIX32(40);
+                player.y = FIX32(0);
+                player.vx = FIX32(0);
+                player.vy = FIX32(0);
+                player.onGround = FALSE;
+                player.health = PLAYER_MAX_HEALTH;
+            }
+            player.action = ANIM_IDLE;
+        }
+        // Bloquer les contrôles pendant l'animation
+        return;
+    }
+    
     player.vx = FIX32(0);
     if(player.onGround && !player.is_shooting){
         player.action = ANIM_IDLE;
@@ -229,21 +236,21 @@ if (joy & BUTTON_A)
     }
     
     fix32 newX = player.x + player.vx;
-    if (!checkSolidCollision(newX, player.y, 42, TOP_COLLISION_OFFSET)) {
+    if (!checkSolidCollision(newX, player.y, PLAYER_GROUND_W, TOP_COLLISION_OFFSET)) {
         player.x = newX;
     }
     
     fix32 newY = player.y + player.vy;
     
     if (player.vy > FIX32(0)) {
-        if (checkSolidCollision(player.x, newY, 42, TOP_COLLISION_OFFSET)) {
+        if (checkSolidCollision(player.x, newY, PLAYER_GROUND_W, TOP_COLLISION_OFFSET)) {
             player.y = FIX32((F32_toInt(player.y) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
             // conserver l'état du bouton jump (si maintenu, rester true jusqu'au relâchement)
             player.jumpPressed = jump ? TRUE : FALSE;
-        } else if (checkPlatformCollision(player.x, newY, 42, TOP_COLLISION_OFFSET) && 
-               !checkPlatformCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET)) {
+        } else if (checkPlatformCollision(player.x, newY, PLAYER_GROUND_W, TOP_COLLISION_OFFSET) && 
+               !checkPlatformCollision(player.x, player.y, PLAYER_GROUND_W, TOP_COLLISION_OFFSET)) {
             player.y = FIX32((F32_toInt(newY) / 8) * 8);
             player.vy = FIX32(0);
             player.onGround = TRUE;
@@ -253,7 +260,7 @@ if (joy & BUTTON_A)
             player.onGround = FALSE;
         }
     } else if (player.vy < FIX32(0)) {
-        if (checkSolidCollision(player.x, newY, 42, TOP_COLLISION_OFFSET)) {
+        if (checkSolidCollision(player.x, newY, PLAYER_GROUND_W, TOP_COLLISION_OFFSET)) {
             player.vy = FIX32(0);
         } else {
             player.y = newY;
@@ -265,14 +272,14 @@ if (joy & BUTTON_A)
     if (!jump) player.jumpPressed = FALSE;
     
     if (player.onGround) {
-        if (!checkSolidCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET) && 
-            !checkPlatformCollision(player.x, player.y, 42, TOP_COLLISION_OFFSET)) {
+        if (!checkSolidCollision(player.x, player.y, PLAYER_GROUND_W, TOP_COLLISION_OFFSET) && 
+            !checkPlatformCollision(player.x, player.y, PLAYER_GROUND_W, TOP_COLLISION_OFFSET)) {
             player.onGround = FALSE;
         }
     }
     
     if (F32_toInt(player.x) < 0) player.x = FIX32(0);
-    if (F32_toInt(player.x) > (MAP_WIDTH * 8) - 42) player.x = FIX32((MAP_WIDTH * 8) - 42);
+    if (F32_toInt(player.x) > (MAP_WIDTH * 8) - PLAYER_GROUND_W) player.x = FIX32((MAP_WIDTH * 8) - PLAYER_GROUND_W);
     if (F32_toInt(player.y) > (MAP_HEIGHT * 8)) player.y = FIX32(0);
     
     s16 playerScreenX = F32_toInt(player.x);
@@ -291,7 +298,7 @@ if (joy & BUTTON_A)
     VDP_setHorizontalScroll(BG_B, -cameraX);
     VDP_setVerticalScroll(BG_B, cameraY);
     
-    SPR_setPosition(player.sprite, F32_toInt(player.x) - cameraX, F32_toInt(player.y) - cameraY);
+    SPR_setPosition(player.sprite, F32_toInt(player.x) - cameraX, F32_toInt(player.y) - cameraY + PLAYER_SPRITE_OFFSET_Y);
     SPR_setHFlip(player.sprite, player.mirroir); 
     SPR_setAnim(player.sprite,player.action); 
     // Mettre à jour la position du boss en coordonnées écran (monde - caméra)
@@ -310,21 +317,24 @@ if (joy & BUTTON_A)
 
 // Dessine la map
 void drawMap() {
-    for (u16 y = 0; y < MAP_HEIGHT; y++) {
-        for (u16 x = 0; x < MAP_WIDTH; x++) {
-            u16 tile;
-            switch (levelMap[y][x]) {
-                case TILE_SOLID:
-                    tile = TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, 2);
-                    break;
-                case TILE_PLATFORM:
-                    tile = TILE_ATTR_FULL(PAL2, 0, FALSE, FALSE, 3);
-                    break;
-                default:
-                    tile = TILE_ATTR_FULL(PAL0, 0, FALSE, FALSE, 1);
-                    break;
+    PAL_setPalette(PAL1, palette_lvl.data, DMA);
+    VDP_loadTileSet(&bga_tileset, 1, DMA);
+    
+    // Charger manuellement les tuiles de la map depuis levl1.h
+    u16 x, y;
+    for (y = 0; y < MAP_HEIGHT; y++) {
+        for (x = 0; x < MAP_WIDTH; x++) {
+            u8 tileType = levelMap[y][x];
+            u16 tileIndex = 1; // Index de base du tileset
+            
+            // Mapper les types de tiles vers les indices du tileset
+            if (tileType == TILE_SOLID) {
+                tileIndex = 2;  // Utiliser tuile 2 pour les blocs solides
+            } else if (tileType == TILE_PLATFORM) {
+                tileIndex = 3;  // Utiliser tuile 3 pour les plateformes
             }
-            VDP_setTileMapXY(BG_B, tile, x, y);
+            
+            VDP_setTileMapXY(BG_B, TILE_ATTR_FULL(PAL1, 0, FALSE, FALSE, tileIndex), x, y);
         }
     }
 }
@@ -337,21 +347,6 @@ int main() {
     PAL_setPalette(PAL0,palette_main.data,DMA);
     SPR_init();
 
-    u16 palette[16];
-    
-
-    
-    palette[0] = RGB24_TO_VDPCOLOR(0x000000);
-    palette[1] = RGB24_TO_VDPCOLOR(0x800000);
-    palette[2] = RGB24_TO_VDPCOLOR(0xFF0000);
-    palette[3] = RGB24_TO_VDPCOLOR(0xFF8080);
-    PAL_setPalette(PAL1, palette, CPU);
-    
-    palette[0] = RGB24_TO_VDPCOLOR(0x000000);
-    palette[1] = RGB24_TO_VDPCOLOR(0x008000);
-    palette[2] = RGB24_TO_VDPCOLOR(0x00FF00);
-    palette[3] = RGB24_TO_VDPCOLOR(0x80FF80);
-    PAL_setPalette(PAL2, palette, CPU);
     // Charger la palette dédiée du boss (déclarée dans resources.res)
     PAL_setPalette(PAL3, palette_boss.data, DMA);
     
