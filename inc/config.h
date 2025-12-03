@@ -36,8 +36,8 @@
 #define MAX_FALL_SPEED 15
 
 // Dimensions de la map
-#define MAP_WIDTH 64
-#define MAP_HEIGHT 36
+#define MAP_WIDTH 145 
+#define MAP_HEIGHT 40
 
 // Types de tiles
 #define TILE_EMPTY 0
