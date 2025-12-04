@@ -17,6 +17,9 @@ typedef struct {
     bool onGround;
     bool jumpPressed;
     bool downPressed;
+    u8 jump_count; // nombre de sauts utilisés (0 au sol, 1 après premier saut, 2 après double saut)
+    bool onWall; // est sur un mur
+    s8 wallDir; // direction du mur (-1 = gauche, 1 = droite, 0 = pas de mur)
     bool mirroir;
     bool is_shooting;
     u8 action;

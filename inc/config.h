@@ -36,14 +36,14 @@
 #define MAX_FALL_SPEED 15
 
 // Dimensions de la map
-#define MAP_WIDTH 64
-#define MAP_HEIGHT 36
+#define MAP_WIDTH 145 
+#define MAP_HEIGHT 40
 
 // Types de tiles
 #define TILE_EMPTY 0
 #define TILE_SOLID 1
 #define TILE_PLATFORM 2
-#define TOP_COLLISION_OFFSET 42
+#define TOP_COLLISION_OFFSET 32
 #define PLAYER_SPRITE_OFFSET_Y 10
 
 #endif // TEST2_CONFIG_H
