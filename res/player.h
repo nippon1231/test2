@@ -17,6 +17,7 @@ typedef struct {
     bool onGround;
     bool jumpPressed;
     bool downPressed;
+    u8 jump_count; // number of jumps used (supports double-jump)
     bool mirroir;
     bool is_shooting;
     u8 action;
