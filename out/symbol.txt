@@ -58,15 +58,17 @@
 00000020 a sprite_boss_palette_data_size
 00000020 a sprite_bullet_palette_data_size
 00000020 a sprite_player_palette_data_size
+00000020 a sprite_soldier_palette_data_size
 0000002c a sprite_playershoot_animation0_frame2_tileset_data_size
 00000035 a DBL_MANT_DIG
 00000040 a sprite_bullet_animation0_frame1_tileset_data_size
+00000062 a sprite_bullet_animation0_frame0_tileset_data_size
 00000064 A _sdata
-00000064 a sprite_bullet_animation0_frame0_tileset_data_size
 00000070 a sprite_playershoot_animation0_frame1_tileset_data_size
 00000080 a palette_boss_data_size
 00000080 a palette_lvl_data_size
 00000080 a palette_main_data_size
+00000080 a palette_soldier_data_size
 00000094 a sprite_player_animation5_frame4_tileset_data_size
 000000ac a sprite_playershoot_animation0_frame0_tileset_data_size
 000000ac A stop_xgm_size
@@ -91,8 +93,19 @@
 0000012e a sprite_player_animation6_frame0_tileset_data_size
 00000134 a sprite_player_animation6_frame1_tileset_data_size
 0000015c a bga_map_mapBlocks_size
+00000160 a sprite_soldier_animation2_frame6_tileset_data_size
+00000174 a sprite_soldier_animation2_frame3_tileset_data_size
+00000176 a sprite_soldier_animation2_frame4_tileset_data_size
+0000017c a sprite_soldier_animation2_frame1_tileset_data_size
 00000182 a sprite_boss_animation0_frame3_tileset_data_size
+0000018c a sprite_soldier_animation0_frame0_tileset_data_size
+0000018c a sprite_soldier_animation2_frame0_tileset_data_size
+0000018c a sprite_soldier_animation2_frame2_tileset_data_size
+00000190 a sprite_soldier_animation2_frame5_tileset_data_size
 0000019e a sprite_boss_animation0_frame4_tileset_data_size
+000001a0 a sprite_soldier_animation1_frame1_tileset_data_size
+000001a0 a sprite_soldier_animation1_frame3_tileset_data_size
+000001ac a sprite_soldier_animation1_frame0_tileset_data_size
 000001ce a sprite_boss_animation0_frame5_tileset_data_size
 00000200 t _Entry_Point
 00000226 a sprite_boss_animation0_frame7_tileset_data_size
@@ -522,453 +535,498 @@
 00006bba t VRAM_createRegion.constprop.0
 00006c18 t VDP_setTileMapDataEx.constprop.0
 00006cec t checkSolidCollision.constprop.0
-00006e7a t VRAM_alloc.constprop.0
-00006f48 t SPR_defragVRAM
-00006ff2 t SPR_addSpriteEx.constprop.0
-00007214 t enemy_bullet_shoot.constprop.0
-00007552 t JOY_update
-00007a1a t Z80_clear
-00007adc t Z80_upload
-00007bf6 t Z80_upload.constprop.0
-00007cd2 t Z80_upload.constprop.1
-00007dae t SPR_end
-00007eae t PAL_doFadeStep
-00007ec8 t Z80_loadDriverInternal
-00007fd8 t SND_NULL_loadDriver
-000080d0 t getAccess
-00008220 t setFMVolume
-000082b8 t setPSGVolume
-00008350 t setMusicTempo.constprop.0
-000083e6 t setLoopNumber.constprop.0
-00008434 t VDP_drawTextEx.constprop.0
-00008688 t VDP_drawText
-000086b2 t unpack.isra.0
-000086e8 t MAP_create.constprop.0
-000089d2 t SPR_update
-000091da t MAP_scrollToEx.constprop.0
-00009878 t VDP_waitVBlank
-00009a22 t sprintf.constprop.0
-00009a40 t sprintf.constprop.1
-00009a5e t sprintf.constprop.2
-00009a7c T BMP_doVBlankProcess
-00009a86 T VDP_setAutoInc
-00009aa0 T memset
-00009aba t XGM2_loadDriver
-00009c3a t Z80_loadDriver
-00009d1c t Z80_init
-00009d82 t XGM2_stop
-00009e08 t XGM2_pause
-00009e7a t SYS_doVBlankProcessEx.constprop.0.isra.0
-0000a3c0 t waitSubTick.part.0
-0000a57e t XGM_loadDriver
-0000a82c t SND_DPCM2_loadDriver
-0000a9d4 t SND_PCM_loadDriver
-0000ab7c t SND_PCM4_loadDriver
-0000ad2c t POOL_reset.constprop.0
-0000ada2 t SPR_initEx.constprop.0
-0000af06 T memcpy
-0000af16 t DMA_transfer.isra.0
-0000b0fe t PAL_setPalette
-0000b126 t VDP_loadTileSet
-0000b220 t updateMapsAddress
-0000b2a8 t VDP_setReg.constprop.0
-0000b2c2 t JOY_setSupport
-0000b2e6 t JOY_reset
-0000b9be t VDP_resetScreen
-0000bc0a t VDP_init
-0000bd0c t internal_reset
-0000be52 t main.isra.0
-0000d9a6 T _start_entry
-0000da74 T _reset_entry
-0000da7e T XGM_doVBlankProcess
-0000dae4 T MDDBG__SymbolDataPtr
-0000dae8 t __ErrorHandler
-0000dae8 t MDDBG__ErrorHandler
-0000dc10 t MDDBG__Error_IdleLoop
-0000dc2a t MDDBG__Error_InitConsole
-0000dc36 t MDDBG__Error_MaskStackBoundaries
-0000dca0 t MDDBG__Error_DrawOffsetLocation
-0000dca4 t MDDBG__Error_DrawOffsetLocation2
-0000dcaa t MDDBG__Error_DrawOffsetLocation__inj
-0000dd38 t MDDBG__ErrorHandler_SetupVDP
-0000dd6e t MDDBG__ErrorHandler_VDPConfig
-0000dd84 t MDDBG__ErrorHandler_VDPConfig_Nametables
-0000ddc0 t MDDBG__ErrorHandler_ConsoleConfig_Initial
-0000ddc4 t MDDBG__ErrorHandler_ConsoleConfig_Shared
-0000ddf4 t MDDBG__Str_OffsetLocation_24bit
-0000ddfd t MDDBG__Str_OffsetLocation_32bit
-0000de38 t MDDBG__Art1bpp_Font
-0000e132 t MDDBG__GetSymbolByOffset
-0000e44c t MDDBG__FormatString
-0000e526 t MDDBG__Console_Init
-0000e564 t MDDBG__Console_Reset
-0000e566 t MDDBG__Console_InitShared
-0000e5b0 t MDDBG__Console_SetPosAsXY_Stack
-0000e5b6 t MDDBG__Console_SetPosAsXY
-0000e5ea t MDDBG__Console_GetPosAsXY
-0000e610 t MDDBG__Console_StartNewLine
-0000e63e t MDDBG__Console_SetBasePattern
-0000e65a t MDDBG__Console_SetWidth
-0000e678 t MDDBG__Console_WriteLine_WithPattern
-0000e67a t MDDBG__Console_WriteLine
-0000e67e t MDDBG__Console_Write
-0000e744 t MDDBG__Console_WriteLine_Formatted
-0000e748 t MDDBG__Console_Write_Formatted
-0000e778 t MDDBG__Decomp1bpp
-0000e794 t MDDBG__KDebug_WriteLine_Formatted
-0000e798 t MDDBG__KDebug_Write_Formatted
-0000e7ec t MDDBG__KDebug_FlushLine
-0000e7f6 t MDDBG__KDebug_WriteLine
-0000e7fa t MDDBG__KDebug_Write
-0000e828 t MDDBG__ErrorHandler_ConsoleOnly
-0000e84e t MDDBG__ErrorHandler_ClearConsole
-0000e878 t MDDBG__ErrorHandler_PauseConsole
-0000e8b2 t MDDBG__ErrorHandler_PagesController
-0000e912 t MDDBG__VSync
-0000e94c t MDDBG__ErrorHandler_ExtraDebuggerList
-0000e958 t MDDBG__Debugger_AddressRegisters
-0000e9a4 t MDDBG__Debugger_Backtrace
-0000ea42 T _Bus_Error
-0000ea42 t MDDBG__BusError
-0000ea56 T _Address_Error
-0000ea56 t MDDBG__AddressError
-0000ea6e T _Illegal_Instruction
-0000ea6e t MDDBG__IllegalInstr
-0000ea8c T _Zero_Divide
-0000ea8c t MDDBG__ZeroDivide
-0000eaa2 T _Chk_Instruction
-0000eaa2 t MDDBG__ChkInstr
-0000eabc T _Trapv_Instruction
-0000eabc t MDDBG__TrapvInstr
-0000ead8 T _Privilege_Violation
-0000ead8 t MDDBG__PrivilegeViol
-0000eaf6 T _Trace
-0000eaf6 t MDDBG__Trace
-0000eb06 T _Line_1010_Emulation
-0000eb06 t MDDBG__Line1010Emu
-0000eb22 T _Line_1111_Emulation
-0000eb22 t MDDBG__Line1111Emu
-0000eb3e T _Error_Exception
-0000eb3e t MDDBG__ErrorExcept
-0000ec00 T smp_null
-0000ed00 T smp_null_dpcm
-0000ed80 T __mulsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:442
-0000ed80 T __mulsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:442
-0000eda4 T __udivsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:469
-0000eda4 T __udivsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:469
-0000edcc t L3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:486
-0000edce t L4	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:487
-0000edfa t L5	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:508
-0000edfc t L6	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:510
-0000ee00 T __divsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:547
-0000ee00 T __divsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:547
-0000ee0e t L1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:558
-0000ee18 t L2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:567
-0000ee2a t L3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:576
-0000ee30 T __umodsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:585
-0000ee60 T __modsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:611
-0000ee90 t Ld$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:687
-0000ee9e t Ld$infty	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:695
-0000ee9e t Ld$overflow	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:695
-0000eeb4 t Ld$underflow	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:704
-0000eec6 t Ld$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:713
-0000eede t Ld$div$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:722
-0000eef4 T __subdf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:756
-0000eefa T __adddf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:766
-0000ef56 t Ladddf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:815
-0000ef6e t Ladddf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:831
-0000f05a t Ladddf$3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1079
-0000f05e t Ladddf$4	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1095
-0000f0c2 t Ladddf$5	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1187
-0000f0e0 t Lsubdf$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1213
-0000f146 t Lsubdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1294
-0000f156 t Ladddf$a$small	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1314
-0000f174 t Ladddf$b$small	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1336
-0000f192 t Ladddf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1357
-0000f198 t Ladddf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1361
-0000f1a0 t Ladddf$b	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1367
-0000f1be t Ladddf$a	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1376
-0000f202 t Ladddf$ret$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1400
-0000f206 t Ladddf$ret	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1409
-0000f21a t Ladddf$ret$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1425
-0000f222 t Ladddf$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1437
-0000f296 T __muldf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1492
-0000f306 t Lmuldf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1538
-0000f318 t Lmuldf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1550
-0000f3c0 t Lmuldf$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1733
-0000f3c6 t Lmuldf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1737
-0000f3d4 t Lmuldf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1744
-0000f3e2 t Lmuldf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1753
-0000f3ee t Lmuldf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1766
-0000f418 t Lmuldf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1789
-0000f42e t Lmuldf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1803
-0000f444 T __divdf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1825
-0000f4b4 t Ldivdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1875
-0000f4c6 t Ldivdf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1887
-0000f588 t Ldivdf$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2039
-0000f58e t Ldivdf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2046
-0000f5c6 t Ldivdf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2071
-0000f5de t Ldivdf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2083
-0000f5ec t Ldivdf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2091
-0000f600 t Ldivdf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2104
-0000f616 t Ldivdf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2118
-0000f62c t Lround$exit	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2138
-0000f68a t Lround$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2223
-0000f6b8 T __negdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2268
-0000f716 T __cmpdf2_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2316
-0000f752 t Lcmpdf$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2340
-0000f768 t Lcmpdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2348
-0000f7a0 t Lcmpdf$a$gt$b	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2392
-0000f7aa t Lcmpdf$b$gt$a	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2403
-0000f7b4 t Lcmpdf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2415
-0000f7bc t Lcmpdf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2418
-0000f7c4 t Lcmpdf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2422
-0000f7ce t Lcmpdf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2427
-0000f7d8 t Lcmpd$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2432
-0000f7e6 T __cmpdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2440
-0000f806 t Lround$to$nearest	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2466
-0000f86a t Lround$to$minus	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
-0000f86a t Lround$to$plus	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
-0000f86a t Lround$to$zero	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
-0000f86c T __clear_sticky_bit	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:352
-0000f87a T $_exception_handler	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:385
-0000f8d8 T __muldi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:528
-0000f940 T __divdi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:1211
-0000fde0 T __unordsf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:110
-0000fe2c T __unorddf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:124
-0000fe88 T __floatunsidf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:141
-0000fedc T __floatsidf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:174
-0000ff50 T __floatunsisf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:220
-0000ff64 T __floatsisf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:228
-0000ff78 T __extendsfdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:236
-0000fff8 T __truncdfsf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:278
-00010100 T __fixdfsi	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:358
-00010180 T __fixsfsi	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:390
-00010194 T __CTOR_LIST__
-0001019c T __CTOR_END__
-0001019c T __DTOR_LIST__
-000101a4 T __DTOR_END__
-000101a4 t sprite_player_palette
-000101aa t sprite_player_animation0_frame0_tileset
-000101b2 t sprite_player_animation0_frame0
-000101c2 t sprite_player_animation0_frames
-000101c6 t sprite_player_animation0
-000101cc t sprite_player_animation1_frame0_tileset
-000101d4 t sprite_player_animation1_frame0
-000101e4 t sprite_player_animation1_frame1_tileset
-000101ec t sprite_player_animation1_frame1
-000101fc t sprite_player_animation1_frame2_tileset
-00010204 t sprite_player_animation1_frame2
-00010214 t sprite_player_animation1_frame3_tileset
-0001021c t sprite_player_animation1_frame3
-0001022c t sprite_player_animation1_frame4_tileset
-00010234 t sprite_player_animation1_frame4
-00010244 t sprite_player_animation1_frame5_tileset
-0001024c t sprite_player_animation1_frame5
-0001025c t sprite_player_animation1_frames
-00010274 t sprite_player_animation1
-0001027a t sprite_player_animation2_frame0_tileset
-00010282 t sprite_player_animation2_frame0
-00010292 t sprite_player_animation2_frames
-00010296 t sprite_player_animation2
-0001029c t sprite_player_animation3_frame0_tileset
-000102a4 t sprite_player_animation3_frame0
-000102b4 t sprite_player_animation3_frame1_tileset
-000102bc t sprite_player_animation3_frame1
-000102cc t sprite_player_animation3_frames
-000102d4 t sprite_player_animation3
-000102da t sprite_player_animation4_frame0_tileset
-000102e2 t sprite_player_animation4_frame0
-000102f2 t sprite_player_animation4_frames
-000102f6 t sprite_player_animation4
-000102fc t sprite_player_animation5_frame0_tileset
-00010304 t sprite_player_animation5_frame0
-00010314 t sprite_player_animation5_frame1_tileset
-0001031c t sprite_player_animation5_frame1
-0001032c t sprite_player_animation5_frame2_tileset
-00010334 t sprite_player_animation5_frame2
-00010344 t sprite_player_animation5_frame3_tileset
-0001034c t sprite_player_animation5_frame3
-0001035c t sprite_player_animation5_frame4_tileset
-00010364 t sprite_player_animation5_frame4
-00010374 t sprite_player_animation5_frames
-00010388 t sprite_player_animation5
-0001038e t sprite_player_animation6_frame0_tileset
-00010396 t sprite_player_animation6_frame0
-000103a6 t sprite_player_animation6_frame1_tileset
-000103ae t sprite_player_animation6_frame1
-000103be t sprite_player_animation6_frames
-000103c6 t sprite_player_animation6
-000103cc t sprite_player_animation7_frame0_tileset
-000103d4 t sprite_player_animation7_frame0
-000103e4 t sprite_player_animation7_frames
-000103e8 t sprite_player_animation7
-000103ee t sprite_player_animations
-0001040e T sprite_player
-00010420 T palette_main
-00010426 t sprite_boss_palette
-0001042c t sprite_boss_animation0_frame0_tileset
-00010434 t sprite_boss_animation0_frame0
-00010450 t sprite_boss_animation0_frame1_tileset
-00010458 t sprite_boss_animation0_frame1
-00010474 t sprite_boss_animation0_frame2_tileset
-0001047c t sprite_boss_animation0_frame2
-000104a4 t sprite_boss_animation0_frame3_tileset
-000104ac t sprite_boss_animation0_frame3
-000104d4 t sprite_boss_animation0_frame4_tileset
-000104dc t sprite_boss_animation0_frame4
-0001050a t sprite_boss_animation0_frame5_tileset
-00010512 t sprite_boss_animation0_frame5
-00010540 t sprite_boss_animation0_frame6_tileset
-00010548 t sprite_boss_animation0_frame6
-00010588 t sprite_boss_animation0_frame7_tileset
-00010590 t sprite_boss_animation0_frame7
-000105d0 t sprite_boss_animation0_frame8_tileset
-000105d8 t sprite_boss_animation0_frame8
-0001062a t sprite_boss_animation0_frame9_tileset
-00010632 t sprite_boss_animation0_frame9
-00010684 t sprite_boss_animation0_frames
-000106ac t sprite_boss_animation0
-000106b2 t sprite_boss_animation1_frame0_tileset
-000106ba t sprite_boss_animation1_frame0
-0001070c t sprite_boss_animation1_frames
-00010710 t sprite_boss_animation1
-00010716 t sprite_boss_animation2_frame0_tileset
-0001071e t sprite_boss_animation2_frame0
-00010776 t sprite_boss_animation2_frames
-0001077a t sprite_boss_animation2
-00010780 t sprite_boss_animation3_frame0_tileset
-00010788 t sprite_boss_animation3_frame0
-000107e6 t sprite_boss_animation3_frame1_tileset
-000107ee t sprite_boss_animation3_frame1
-00010852 t sprite_boss_animation3_frames
-0001085a t sprite_boss_animation3
-00010860 t sprite_boss_animation4_frame0_tileset
-00010868 t sprite_boss_animation4_frame0
-000108ba t sprite_boss_animation4_frame1_tileset
-000108c2 t sprite_boss_animation4_frame1
-00010914 t sprite_boss_animation4_frames
-0001091c t sprite_boss_animation4
-00010922 t sprite_boss_animation5_frame0_tileset
-0001092a t sprite_boss_animation5_frame0
-0001098e t sprite_boss_animation5_frame1_tileset
-00010996 t sprite_boss_animation5_frame1
-000109ee t sprite_boss_animation5_frame2_tileset
-000109f6 t sprite_boss_animation5_frame2
-00010a5a t sprite_boss_animation5_frames
-00010a66 t sprite_boss_animation5
-00010a6c t sprite_boss_animations
-00010a84 T sprite_boss
-00010a96 T palette_boss
-00010a9c T bga_tileset
-00010aa4 T bga_map
-00010ac0 T palette_lvl
-00010ac6 t sprite_bullet_palette
-00010acc t sprite_bullet_animation0_frame0_tileset
-00010ad4 t sprite_bullet_animation0_frame0
-00010ae4 t sprite_bullet_animation0_frame1_tileset
-00010aec t sprite_bullet_animation0_frame1
-00010afc t sprite_bullet_animation0_frames
-00010b04 t sprite_bullet_animation0
-00010b0a t sprite_bullet_animations
-00010b0e T sprite_bullet
-00010b20 t sprite_playershoot_animation0_frame0_tileset
-00010b28 t sprite_playershoot_animation0_frame0
-00010b38 t sprite_playershoot_animation0_frame1_tileset
-00010b40 t sprite_playershoot_animation0_frame1
-00010b50 t sprite_playershoot_animation0_frame2_tileset
-00010b58 t sprite_playershoot_animation0_frame2
-00010b68 t sprite_playershoot_animation0_frames
-00010b74 t sprite_playershoot_animation0
-00010b7a t sprite_playershoot_animations
-00010b7e T sprite_playershoot
-00010c32 t levelMap2
-000122da t tab_vol
-000132da t psgVolTable
-0001333e t fmVolTable
-000133a2 t palette_blue
-000133c2 t palette_green
-000133e2 t palette_red
-00013402 t palette_grey
-00013422 t lowercase_hexchars
-00013433 t uppercase_hexchars
-00013444 t visibilityMask.0
-00013466 t xlt.1
-0001346e t xlt_all.0
-0001347e t sgdk_logo_palette
-00013484 T sgdk_logo
-00013492 T font_default
-0001349a T font_pal_default
-000134a0 T drv_null
-000134da T drv_xgm
-00014bda T drv_dpcm2
-000159da T drv_pcm
-0001650a T drv_pcm4
-00016f78 T drv_xgm2
-00018f78 T __clz_tab	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:670
-00019078 T __INIT_SECTION__
-0001907a T __FINI_SECTION__
-0001907c T _etext
-0001907c t sprite_player_palette_data
-0001909c t palette_main_data
-0001911c t sprite_boss_palette_data
-0001913c t palette_boss_data
-000191bc t palette_lvl_data
-0001923c t sprite_bullet_palette_data
-0001925c t sgdk_logo_palette_data
-0001927c t font_pal_default_data
-0001929c T stop_xgm
-00019348 t font_default_data
-000195aa t sgdk_logo_data
-000199e4 t sprite_player_animation0_frame0_tileset_data
-00019b04 t sprite_player_animation1_frame0_tileset_data
-00019c24 t sprite_player_animation1_frame1_tileset_data
-00019cfe t sprite_player_animation1_frame2_tileset_data
-00019e1e t sprite_player_animation1_frame3_tileset_data
-00019f38 t sprite_player_animation1_frame4_tileset_data
-00019fec t sprite_player_animation1_frame5_tileset_data
-0001a0c4 t sprite_player_animation2_frame0_tileset_data
-0001a184 t sprite_player_animation3_frame0_tileset_data
-0001a2a4 t sprite_player_animation3_frame1_tileset_data
-0001a394 t sprite_player_animation4_frame0_tileset_data
-0001a472 t sprite_player_animation5_frame0_tileset_data
-0001a56a t sprite_player_animation5_frame1_tileset_data
-0001a686 t sprite_player_animation5_frame2_tileset_data
-0001a754 t sprite_player_animation5_frame3_tileset_data
-0001a848 t sprite_player_animation5_frame4_tileset_data
-0001a8dc t sprite_player_animation6_frame0_tileset_data
-0001aa0a t sprite_player_animation6_frame1_tileset_data
-0001ab3e t sprite_player_animation7_frame0_tileset_data
-0001abfc t sprite_boss_animation0_frame0_tileset_data
-0001ae4a t sprite_boss_animation0_frame1_tileset_data
-0001aefa t sprite_boss_animation0_frame2_tileset_data
-0001b122 t sprite_boss_animation0_frame3_tileset_data
-0001b2a4 t sprite_boss_animation0_frame4_tileset_data
-0001b442 t sprite_boss_animation0_frame5_tileset_data
-0001b610 t sprite_boss_animation0_frame6_tileset_data
-0001b908 t sprite_boss_animation0_frame7_tileset_data
-0001bb2e t sprite_boss_animation0_frame8_tileset_data
-0001c9d8 t sprite_boss_animation0_frame9_tileset_data
-0001d34c t sprite_boss_animation1_frame0_tileset_data
-0001e02a t sprite_boss_animation2_frame0_tileset_data
-0001ed50 t sprite_boss_animation3_frame0_tileset_data
-0001fbf8 t sprite_boss_animation3_frame1_tileset_data
-000207ce t sprite_boss_animation4_frame0_tileset_data
-00021412 t sprite_boss_animation4_frame1_tileset_data
-00021cde t sprite_boss_animation5_frame0_tileset_data
-000229f8 t sprite_boss_animation5_frame1_tileset_data
-00023652 t sprite_boss_animation5_frame2_tileset_data
-000241a8 t bga_tileset_data
-0002450c t sprite_bullet_animation0_frame0_tileset_data
-00024570 t sprite_bullet_animation0_frame1_tileset_data
-000245b0 t sprite_playershoot_animation0_frame0_tileset_data
-0002465c t sprite_playershoot_animation0_frame1_tileset_data
-000246cc t sprite_playershoot_animation0_frame2_tileset_data
-000246f8 t bga_map_metatiles
-00024952 t bga_map_mapBlockIndexes
-00024970 t bga_map_mapBlockRowOffsets
-00024976 t bga_map_mapBlocks
-00024ad2 A _stext
+00006e84 t VRAM_alloc.constprop.0
+00006f52 t SPR_defragVRAM
+00006ffc t SPR_addSpriteEx.constprop.0
+0000721e t enemy_bullet_shoot.constprop.0
+0000755c t JOY_update
+00007a24 t Z80_clear
+00007ae6 t Z80_upload
+00007c00 t Z80_upload.constprop.0
+00007cdc t Z80_upload.constprop.1
+00007db8 t SPR_end
+00007eb8 t PAL_doFadeStep
+00007ed2 t SND_NULL_loadDriver
+00007fca t Z80_loadDriverInternal
+000080da t getAccess
+0000822a t setFMVolume
+000082c2 t setPSGVolume
+0000835a t setMusicTempo.constprop.0
+000083f0 t setLoopNumber.constprop.0
+0000843e t VDP_drawTextEx.constprop.0
+00008692 t VDP_drawText
+000086bc t unpack.isra.0
+000086f2 t MAP_create.constprop.0
+000089dc t SPR_update
+000091e4 t MAP_scrollToEx.constprop.0
+00009882 t VDP_waitVBlank
+00009a2c t sprintf.constprop.0
+00009a4a t sprintf.constprop.1
+00009a68 t sprintf.constprop.2
+00009a86 T BMP_doVBlankProcess
+00009a90 T VDP_setAutoInc
+00009aaa T memset
+00009ac4 t XGM2_loadDriver
+00009c44 t Z80_loadDriver
+00009d26 t Z80_init
+00009d8c t XGM2_stop
+00009e12 t XGM2_pause
+00009e84 t SYS_doVBlankProcessEx.constprop.0.isra.0
+0000a3ca t waitSubTick.part.0
+0000a588 t XGM_loadDriver
+0000a836 t SND_DPCM2_loadDriver
+0000a9de t SND_PCM_loadDriver
+0000ab86 t SND_PCM4_loadDriver
+0000ad36 t POOL_reset.constprop.0
+0000adac t SPR_initEx.constprop.0
+0000af10 T memcpy
+0000af20 t DMA_transfer.isra.0
+0000b108 t PAL_setPalette
+0000b130 t VDP_loadTileSet
+0000b22a t updateMapsAddress
+0000b2b2 t VDP_setReg.constprop.0
+0000b2cc t JOY_setSupport
+0000b2f0 t JOY_reset
+0000b9c8 t VDP_resetScreen
+0000bc14 t VDP_init
+0000bd16 t internal_reset
+0000be5c t main.isra.0
+0000eef0 T _start_entry
+0000efbe T _reset_entry
+0000efc8 T XGM_doVBlankProcess
+0000f034 T MDDBG__SymbolDataPtr
+0000f038 t __ErrorHandler
+0000f038 t MDDBG__ErrorHandler
+0000f160 t MDDBG__Error_IdleLoop
+0000f17a t MDDBG__Error_InitConsole
+0000f186 t MDDBG__Error_MaskStackBoundaries
+0000f1f0 t MDDBG__Error_DrawOffsetLocation
+0000f1f4 t MDDBG__Error_DrawOffsetLocation2
+0000f1fa t MDDBG__Error_DrawOffsetLocation__inj
+0000f288 t MDDBG__ErrorHandler_SetupVDP
+0000f2be t MDDBG__ErrorHandler_VDPConfig
+0000f2d4 t MDDBG__ErrorHandler_VDPConfig_Nametables
+0000f310 t MDDBG__ErrorHandler_ConsoleConfig_Initial
+0000f314 t MDDBG__ErrorHandler_ConsoleConfig_Shared
+0000f344 t MDDBG__Str_OffsetLocation_24bit
+0000f34d t MDDBG__Str_OffsetLocation_32bit
+0000f388 t MDDBG__Art1bpp_Font
+0000f682 t MDDBG__GetSymbolByOffset
+0000f99c t MDDBG__FormatString
+0000fa76 t MDDBG__Console_Init
+0000fab4 t MDDBG__Console_Reset
+0000fab6 t MDDBG__Console_InitShared
+0000fb00 t MDDBG__Console_SetPosAsXY_Stack
+0000fb06 t MDDBG__Console_SetPosAsXY
+0000fb3a t MDDBG__Console_GetPosAsXY
+0000fb60 t MDDBG__Console_StartNewLine
+0000fb8e t MDDBG__Console_SetBasePattern
+0000fbaa t MDDBG__Console_SetWidth
+0000fbc8 t MDDBG__Console_WriteLine_WithPattern
+0000fbca t MDDBG__Console_WriteLine
+0000fbce t MDDBG__Console_Write
+0000fc94 t MDDBG__Console_WriteLine_Formatted
+0000fc98 t MDDBG__Console_Write_Formatted
+0000fcc8 t MDDBG__Decomp1bpp
+0000fce4 t MDDBG__KDebug_WriteLine_Formatted
+0000fce8 t MDDBG__KDebug_Write_Formatted
+0000fd3c t MDDBG__KDebug_FlushLine
+0000fd46 t MDDBG__KDebug_WriteLine
+0000fd4a t MDDBG__KDebug_Write
+0000fd78 t MDDBG__ErrorHandler_ConsoleOnly
+0000fd9e t MDDBG__ErrorHandler_ClearConsole
+0000fdc8 t MDDBG__ErrorHandler_PauseConsole
+0000fe02 t MDDBG__ErrorHandler_PagesController
+0000fe62 t MDDBG__VSync
+0000fe9c t MDDBG__ErrorHandler_ExtraDebuggerList
+0000fea8 t MDDBG__Debugger_AddressRegisters
+0000fef4 t MDDBG__Debugger_Backtrace
+0000ff92 T _Bus_Error
+0000ff92 t MDDBG__BusError
+0000ffa6 T _Address_Error
+0000ffa6 t MDDBG__AddressError
+0000ffbe T _Illegal_Instruction
+0000ffbe t MDDBG__IllegalInstr
+0000ffdc T _Zero_Divide
+0000ffdc t MDDBG__ZeroDivide
+0000fff2 T _Chk_Instruction
+0000fff2 t MDDBG__ChkInstr
+0001000c T _Trapv_Instruction
+0001000c t MDDBG__TrapvInstr
+00010028 T _Privilege_Violation
+00010028 t MDDBG__PrivilegeViol
+00010046 T _Trace
+00010046 t MDDBG__Trace
+00010056 T _Line_1010_Emulation
+00010056 t MDDBG__Line1010Emu
+00010072 T _Line_1111_Emulation
+00010072 t MDDBG__Line1111Emu
+0001008e T _Error_Exception
+0001008e t MDDBG__ErrorExcept
+00010100 T smp_null
+00010200 T smp_null_dpcm
+00010280 T __mulsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:442
+00010280 T __mulsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:442
+000102a4 T __udivsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:469
+000102a4 T __udivsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:469
+000102cc t L3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:486
+000102ce t L4	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:487
+000102fa t L5	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:508
+000102fc t L6	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:510
+00010300 T __divsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:547
+00010300 T __divsi3_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:547
+0001030e t L1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:558
+00010318 t L2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:567
+0001032a t L3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:576
+00010330 T __umodsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:585
+00010360 T __modsi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:611
+00010390 t Ld$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:687
+0001039e t Ld$infty	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:695
+0001039e t Ld$overflow	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:695
+000103b4 t Ld$underflow	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:704
+000103c6 t Ld$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:713
+000103de t Ld$div$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:722
+000103f4 T __subdf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:756
+000103fa T __adddf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:766
+00010456 t Ladddf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:815
+0001046e t Ladddf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:831
+0001055a t Ladddf$3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1079
+0001055e t Ladddf$4	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1095
+000105c2 t Ladddf$5	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1187
+000105e0 t Lsubdf$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1213
+00010646 t Lsubdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1294
+00010656 t Ladddf$a$small	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1314
+00010674 t Ladddf$b$small	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1336
+00010692 t Ladddf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1357
+00010698 t Ladddf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1361
+000106a0 t Ladddf$b	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1367
+000106be t Ladddf$a	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1376
+00010702 t Ladddf$ret$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1400
+00010706 t Ladddf$ret	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1409
+0001071a t Ladddf$ret$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1425
+00010722 t Ladddf$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1437
+00010796 T __muldf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1492
+00010806 t Lmuldf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1538
+00010818 t Lmuldf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1550
+000108c0 t Lmuldf$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1733
+000108c6 t Lmuldf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1737
+000108d4 t Lmuldf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1744
+000108e2 t Lmuldf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1753
+000108ee t Lmuldf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1766
+00010918 t Lmuldf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1789
+0001092e t Lmuldf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1803
+00010944 T __divdf3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1825
+000109b4 t Ldivdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1875
+000109c6 t Ldivdf$2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:1887
+00010a88 t Ldivdf$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2039
+00010a8e t Ldivdf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2046
+00010ac6 t Ldivdf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2071
+00010ade t Ldivdf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2083
+00010aec t Ldivdf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2091
+00010b00 t Ldivdf$a$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2104
+00010b16 t Ldivdf$b$den	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2118
+00010b2c t Lround$exit	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2138
+00010b8a t Lround$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2223
+00010bb8 T __negdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2268
+00010c16 T __cmpdf2_internal	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2316
+00010c52 t Lcmpdf$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2340
+00010c68 t Lcmpdf$1	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2348
+00010ca0 t Lcmpdf$a$gt$b	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2392
+00010caa t Lcmpdf$b$gt$a	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2403
+00010cb4 t Lcmpdf$a$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2415
+00010cbc t Lcmpdf$b$0	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2418
+00010cc4 t Lcmpdf$a$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2422
+00010cce t Lcmpdf$b$nf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2427
+00010cd8 t Lcmpd$inop	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2432
+00010ce6 T __cmpdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2440
+00010d06 t Lround$to$nearest	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2466
+00010d6a t Lround$to$minus	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
+00010d6a t Lround$to$plus	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
+00010d6a t Lround$to$zero	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:2548
+00010d6c T __clear_sticky_bit	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:352
+00010d7a T $_exception_handler	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/lb1sf68.S:385
+00010dd8 T __muldi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:528
+00010e40 T __divdi3	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:1211
+000112e0 T __unordsf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:110
+0001132c T __unorddf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:124
+00011388 T __floatunsidf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:141
+000113dc T __floatsidf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:174
+00011450 T __floatunsisf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:220
+00011464 T __floatsisf	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:228
+00011478 T __extendsfdf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:236
+000114f8 T __truncdfsf2	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:278
+00011600 T __fixdfsi	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:358
+00011680 T __fixsfsi	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/config/m68k/fpgnulib.c:390
+00011694 T __CTOR_LIST__
+0001169c T __CTOR_END__
+0001169c T __DTOR_LIST__
+000116a4 T __DTOR_END__
+000116a4 t sprite_player_palette
+000116aa t sprite_player_animation0_frame0_tileset
+000116b2 t sprite_player_animation0_frame0
+000116c2 t sprite_player_animation0_frames
+000116c6 t sprite_player_animation0
+000116cc t sprite_player_animation1_frame0_tileset
+000116d4 t sprite_player_animation1_frame0
+000116e4 t sprite_player_animation1_frame1_tileset
+000116ec t sprite_player_animation1_frame1
+000116fc t sprite_player_animation1_frame2_tileset
+00011704 t sprite_player_animation1_frame2
+00011714 t sprite_player_animation1_frame3_tileset
+0001171c t sprite_player_animation1_frame3
+0001172c t sprite_player_animation1_frame4_tileset
+00011734 t sprite_player_animation1_frame4
+00011744 t sprite_player_animation1_frame5_tileset
+0001174c t sprite_player_animation1_frame5
+0001175c t sprite_player_animation1_frames
+00011774 t sprite_player_animation1
+0001177a t sprite_player_animation2_frame0_tileset
+00011782 t sprite_player_animation2_frame0
+00011792 t sprite_player_animation2_frames
+00011796 t sprite_player_animation2
+0001179c t sprite_player_animation3_frame0_tileset
+000117a4 t sprite_player_animation3_frame0
+000117b4 t sprite_player_animation3_frame1_tileset
+000117bc t sprite_player_animation3_frame1
+000117cc t sprite_player_animation3_frames
+000117d4 t sprite_player_animation3
+000117da t sprite_player_animation4_frame0_tileset
+000117e2 t sprite_player_animation4_frame0
+000117f2 t sprite_player_animation4_frames
+000117f6 t sprite_player_animation4
+000117fc t sprite_player_animation5_frame0_tileset
+00011804 t sprite_player_animation5_frame0
+00011814 t sprite_player_animation5_frame1_tileset
+0001181c t sprite_player_animation5_frame1
+0001182c t sprite_player_animation5_frame2_tileset
+00011834 t sprite_player_animation5_frame2
+00011844 t sprite_player_animation5_frame3_tileset
+0001184c t sprite_player_animation5_frame3
+0001185c t sprite_player_animation5_frame4_tileset
+00011864 t sprite_player_animation5_frame4
+00011874 t sprite_player_animation5_frames
+00011888 t sprite_player_animation5
+0001188e t sprite_player_animation6_frame0_tileset
+00011896 t sprite_player_animation6_frame0
+000118a6 t sprite_player_animation6_frame1_tileset
+000118ae t sprite_player_animation6_frame1
+000118be t sprite_player_animation6_frames
+000118c6 t sprite_player_animation6
+000118cc t sprite_player_animation7_frame0_tileset
+000118d4 t sprite_player_animation7_frame0
+000118e4 t sprite_player_animation7_frames
+000118e8 t sprite_player_animation7
+000118ee t sprite_player_animations
+0001190e T sprite_player
+00011920 T palette_main
+00011926 t sprite_boss_palette
+0001192c t sprite_boss_animation0_frame0_tileset
+00011934 t sprite_boss_animation0_frame0
+00011950 t sprite_boss_animation0_frame1_tileset
+00011958 t sprite_boss_animation0_frame1
+00011974 t sprite_boss_animation0_frame2_tileset
+0001197c t sprite_boss_animation0_frame2
+000119a4 t sprite_boss_animation0_frame3_tileset
+000119ac t sprite_boss_animation0_frame3
+000119d4 t sprite_boss_animation0_frame4_tileset
+000119dc t sprite_boss_animation0_frame4
+00011a0a t sprite_boss_animation0_frame5_tileset
+00011a12 t sprite_boss_animation0_frame5
+00011a40 t sprite_boss_animation0_frame6_tileset
+00011a48 t sprite_boss_animation0_frame6
+00011a88 t sprite_boss_animation0_frame7_tileset
+00011a90 t sprite_boss_animation0_frame7
+00011ad0 t sprite_boss_animation0_frame8_tileset
+00011ad8 t sprite_boss_animation0_frame8
+00011b2a t sprite_boss_animation0_frame9_tileset
+00011b32 t sprite_boss_animation0_frame9
+00011b84 t sprite_boss_animation0_frames
+00011bac t sprite_boss_animation0
+00011bb2 t sprite_boss_animation1_frame0_tileset
+00011bba t sprite_boss_animation1_frame0
+00011c0c t sprite_boss_animation1_frames
+00011c10 t sprite_boss_animation1
+00011c16 t sprite_boss_animation2_frame0_tileset
+00011c1e t sprite_boss_animation2_frame0
+00011c76 t sprite_boss_animation2_frames
+00011c7a t sprite_boss_animation2
+00011c80 t sprite_boss_animation3_frame0_tileset
+00011c88 t sprite_boss_animation3_frame0
+00011ce6 t sprite_boss_animation3_frame1_tileset
+00011cee t sprite_boss_animation3_frame1
+00011d52 t sprite_boss_animation3_frames
+00011d5a t sprite_boss_animation3
+00011d60 t sprite_boss_animation4_frame0_tileset
+00011d68 t sprite_boss_animation4_frame0
+00011dba t sprite_boss_animation4_frame1_tileset
+00011dc2 t sprite_boss_animation4_frame1
+00011e14 t sprite_boss_animation4_frames
+00011e1c t sprite_boss_animation4
+00011e22 t sprite_boss_animation5_frame0_tileset
+00011e2a t sprite_boss_animation5_frame0
+00011e8e t sprite_boss_animation5_frame1_tileset
+00011e96 t sprite_boss_animation5_frame1
+00011eee t sprite_boss_animation5_frame2_tileset
+00011ef6 t sprite_boss_animation5_frame2
+00011f5a t sprite_boss_animation5_frames
+00011f66 t sprite_boss_animation5
+00011f6c t sprite_boss_animations
+00011f84 T sprite_boss
+00011f96 T palette_boss
+00011f9c t sprite_soldier_palette
+00011fa2 t sprite_soldier_animation0_frame0_tileset
+00011faa t sprite_soldier_animation0_frame0
+00011fc0 t sprite_soldier_animation0_frames
+00011fc4 t sprite_soldier_animation0
+00011fca t sprite_soldier_animation1_frame0_tileset
+00011fd2 t sprite_soldier_animation1_frame0
+00011fe8 t sprite_soldier_animation1_frame1_tileset
+00011ff0 t sprite_soldier_animation1_frame1
+00012006 t sprite_soldier_animation1_frame3_tileset
+0001200e t sprite_soldier_animation1_frame3
+00012024 t sprite_soldier_animation1_frames
+00012034 t sprite_soldier_animation1
+0001203a t sprite_soldier_animation2_frame0_tileset
+00012042 t sprite_soldier_animation2_frame0
+00012058 t sprite_soldier_animation2_frame1_tileset
+00012060 t sprite_soldier_animation2_frame1
+00012076 t sprite_soldier_animation2_frame2_tileset
+0001207e t sprite_soldier_animation2_frame2
+00012094 t sprite_soldier_animation2_frame3_tileset
+0001209c t sprite_soldier_animation2_frame3
+000120b2 t sprite_soldier_animation2_frame4_tileset
+000120ba t sprite_soldier_animation2_frame4
+000120d0 t sprite_soldier_animation2_frame5_tileset
+000120d8 t sprite_soldier_animation2_frame5
+000120ee t sprite_soldier_animation2_frame6_tileset
+000120f6 t sprite_soldier_animation2_frame6
+00012112 t sprite_soldier_animation2_frames
+0001212e t sprite_soldier_animation2
+00012134 t sprite_soldier_animations
+00012140 T sprite_soldier
+00012152 T palette_soldier
+00012158 T bga_tileset
+00012160 T bga_map
+0001217c T palette_lvl
+00012182 t sprite_bullet_palette
+00012188 t sprite_bullet_animation0_frame0_tileset
+00012190 t sprite_bullet_animation0_frame0
+000121a0 t sprite_bullet_animation0_frame1_tileset
+000121a8 t sprite_bullet_animation0_frame1
+000121b8 t sprite_bullet_animation0_frames
+000121c0 t sprite_bullet_animation0
+000121c6 t sprite_bullet_animations
+000121ca T sprite_bullet
+000121dc t sprite_playershoot_animation0_frame0_tileset
+000121e4 t sprite_playershoot_animation0_frame0
+000121f4 t sprite_playershoot_animation0_frame1_tileset
+000121fc t sprite_playershoot_animation0_frame1
+0001220c t sprite_playershoot_animation0_frame2_tileset
+00012214 t sprite_playershoot_animation0_frame2
+00012224 t sprite_playershoot_animation0_frames
+00012230 t sprite_playershoot_animation0
+00012236 t sprite_playershoot_animations
+0001223a T sprite_playershoot
+000122ee t levelMap2
+00013996 t tab_vol
+00014996 t psgVolTable
+000149fa t fmVolTable
+00014a5e t palette_blue
+00014a7e t palette_green
+00014a9e t palette_red
+00014abe t palette_grey
+00014ade t lowercase_hexchars
+00014aef t uppercase_hexchars
+00014b00 t visibilityMask.0
+00014b22 t xlt.1
+00014b2a t xlt_all.0
+00014b3a t sgdk_logo_palette
+00014b40 T sgdk_logo
+00014b4e T font_default
+00014b56 T font_pal_default
+00014b5c T drv_null
+00014b96 T drv_xgm
+00016296 T drv_dpcm2
+00017096 T drv_pcm
+00017bc6 T drv_pcm4
+00018634 T drv_xgm2
+0001a634 T __clz_tab	/home/runner/work/m68k-elf-gcc/m68k-elf-gcc/.build/HOST-i686-w64-mingw32/m68k-elf/src/gcc/libgcc/libgcc2.c:670
+0001a734 T __INIT_SECTION__
+0001a736 T __FINI_SECTION__
+0001a738 T _etext
+0001a738 t sprite_player_palette_data
+0001a758 t palette_main_data
+0001a7d8 t sprite_boss_palette_data
+0001a7f8 t palette_boss_data
+0001a878 t sprite_soldier_palette_data
+0001a898 t palette_soldier_data
+0001a918 t palette_lvl_data
+0001a998 t sprite_bullet_palette_data
+0001a9b8 t sgdk_logo_palette_data
+0001a9d8 t font_pal_default_data
+0001a9f8 T stop_xgm
+0001aaa4 t font_default_data
+0001ad06 t sgdk_logo_data
+0001b140 t sprite_player_animation0_frame0_tileset_data
+0001b260 t sprite_player_animation1_frame0_tileset_data
+0001b380 t sprite_player_animation1_frame1_tileset_data
+0001b45a t sprite_player_animation1_frame2_tileset_data
+0001b57a t sprite_player_animation1_frame3_tileset_data
+0001b694 t sprite_player_animation1_frame4_tileset_data
+0001b748 t sprite_player_animation1_frame5_tileset_data
+0001b820 t sprite_player_animation2_frame0_tileset_data
+0001b8e0 t sprite_player_animation3_frame0_tileset_data
+0001ba00 t sprite_player_animation3_frame1_tileset_data
+0001baf0 t sprite_player_animation4_frame0_tileset_data
+0001bbce t sprite_player_animation5_frame0_tileset_data
+0001bcc6 t sprite_player_animation5_frame1_tileset_data
+0001bde2 t sprite_player_animation5_frame2_tileset_data
+0001beb0 t sprite_player_animation5_frame3_tileset_data
+0001bfa4 t sprite_player_animation5_frame4_tileset_data
+0001c038 t sprite_player_animation6_frame0_tileset_data
+0001c166 t sprite_player_animation6_frame1_tileset_data
+0001c29a t sprite_player_animation7_frame0_tileset_data
+0001c358 t sprite_boss_animation0_frame0_tileset_data
+0001c5a6 t sprite_boss_animation0_frame1_tileset_data
+0001c656 t sprite_boss_animation0_frame2_tileset_data
+0001c87e t sprite_boss_animation0_frame3_tileset_data
+0001ca00 t sprite_boss_animation0_frame4_tileset_data
+0001cb9e t sprite_boss_animation0_frame5_tileset_data
+0001cd6c t sprite_boss_animation0_frame6_tileset_data
+0001d064 t sprite_boss_animation0_frame7_tileset_data
+0001d28a t sprite_boss_animation0_frame8_tileset_data
+0001e134 t sprite_boss_animation0_frame9_tileset_data
+0001eaa8 t sprite_boss_animation1_frame0_tileset_data
+0001f786 t sprite_boss_animation2_frame0_tileset_data
+000204ac t sprite_boss_animation3_frame0_tileset_data
+00021354 t sprite_boss_animation3_frame1_tileset_data
+00021f2a t sprite_boss_animation4_frame0_tileset_data
+00022b6e t sprite_boss_animation4_frame1_tileset_data
+0002343a t sprite_boss_animation5_frame0_tileset_data
+00024154 t sprite_boss_animation5_frame1_tileset_data
+00024dae t sprite_boss_animation5_frame2_tileset_data
+00025904 t sprite_soldier_animation0_frame0_tileset_data
+00025a90 t sprite_soldier_animation1_frame0_tileset_data
+00025c3c t sprite_soldier_animation1_frame1_tileset_data
+00025ddc t sprite_soldier_animation1_frame3_tileset_data
+00025f7c t sprite_soldier_animation2_frame0_tileset_data
+00026108 t sprite_soldier_animation2_frame1_tileset_data
+00026284 t sprite_soldier_animation2_frame2_tileset_data
+00026410 t sprite_soldier_animation2_frame3_tileset_data
+00026584 t sprite_soldier_animation2_frame4_tileset_data
+000266fa t sprite_soldier_animation2_frame5_tileset_data
+0002688a t sprite_soldier_animation2_frame6_tileset_data
+000269ea t bga_tileset_data
+00026d4e t sprite_bullet_animation0_frame0_tileset_data
+00026db0 t sprite_bullet_animation0_frame1_tileset_data
+00026df0 t sprite_playershoot_animation0_frame0_tileset_data
+00026e9c t sprite_playershoot_animation0_frame1_tileset_data
+00026f0c t sprite_playershoot_animation0_frame2_tileset_data
+00026f38 t bga_map_metatiles
+00027192 t bga_map_mapBlockIndexes
+000271b0 t bga_map_mapBlockRowOffsets
+000271b6 t bga_map_mapBlocks
+00027312 A _stext
 7fffffff a QUIET_NaN
 e0ff0000 d _rng_state
 e0ff0004 D task_sr
@@ -998,89 +1056,90 @@ e0ff0082 B intTrace
 e0ff0084 B dmaQueues
 e0ff0088 b state
 e0ff008a b fire_cooldown
-e0ff008c b bgMap
-e0ff0090 b player
-e0ff00ba b boss
-e0ff00e0 b fadePSGVol
-e0ff00e2 b fadeFMVol
-e0ff00e4 b fadeCount
-e0ff00e6 b cameraX
-e0ff00e8 b cameraY
-e0ff00ea b game_state
-e0ff019a b vscroll_update
-e0ff019c b vscroll
-e0ff01a0 b hscroll_update
-e0ff01a2 b hscroll
-e0ff01a6 b usedVDPSprite
-e0ff01a8 b xgm2WaitTab
-e0ff01b0 b xgm2IdleTab
-e0ff01b8 b xgmTempoCnt
-e0ff01bc b xgmWaitTab
-e0ff01fc b xgmIdleTab
-e0ff023c b xgmTempoDef
-e0ff023e b xgmTempo
-e0ff0240 b busProtectSignalAddress
-e0ff0242 b driverFlags
-e0ff0244 b currentDriver
-e0ff0246 b allocStack
-e0ff0386 b lastVTimer.0
-e0ff0388 b text_plan
-e0ff038c b text_basetile
-e0ff038e b lastVCnt
-e0ff0390 b windowWidthSft
-e0ff0392 b planeWidthSft
-e0ff0394 b windowWidth
-e0ff0396 b planeHeight
-e0ff0398 b planeWidth
-e0ff039a b hscrl_addr
-e0ff039c b window_addr
-e0ff039e b lastTick
-e0ff03a2 b cpuFrameLoad
-e0ff03a4 b frameLoadIndex
-e0ff03a6 b frameLoads
-e0ff03b6 b vblankCB
-e0ff03ba b flags
-e0ff03bc b screenHeight
-e0ff03be b screenWidth
-e0ff03c0 b maps_addr
-e0ff03c2 b slist_addr
-e0ff03c4 b vdpSpriteCache
-e0ff06c4 b spriteVramSize
-e0ff06c8 b vram
-e0ff06d4 b lastSprite
-e0ff06d8 b firstSprite
-e0ff06dc b spritesPool
-e0ff06e0 b fadeCounter
-e0ff06e2 b heap
-e0ff06e6 b free.lto_priv.0
-e0ff06ea b bgb_addr
-e0ff06ec b bga_addr
-e0ff06ee b randomSeedSet
-e0ff06f0 b joyEventCB
-e0ff06f4 b retry
-e0ff06f5 b phase.lto_priv.1
-e0ff06f6 b gun
-e0ff06f7 b extSet
-e0ff06f8 b disableIntStack
-e0ff06fa b joyAxisY
-e0ff070a b joyAxisX
-e0ff071a b joyState
-e0ff072a b joyType
-e0ff0732 b portSupport
-e0ff0734 b portType
-e0ff0736 b gport
-e0ff0738 b regValues
-e0ff074c b flag
-e0ff074e b maxTransferPerFrame
-e0ff0750 b queueSize
-e0ff0752 b nextDataBuffer
-e0ff0756 b queueTransferSize
-e0ff0758 b queueIndexLimit
-e0ff075a b queueIndex
-e0ff075c b dmaDataBuffer
-e0ff0760 b dataBufferSize
-e0ff0762 b phase.lto_priv.0
-e0ff0764 B _bend
+e0ff008c b enemies
+e0ff020c b bgMap
+e0ff0210 b player
+e0ff023a b boss
+e0ff0260 b fadePSGVol
+e0ff0262 b fadeFMVol
+e0ff0264 b fadeCount
+e0ff0266 b cameraX
+e0ff0268 b cameraY
+e0ff026a b game_state
+e0ff031a b vscroll_update
+e0ff031c b vscroll
+e0ff0320 b hscroll_update
+e0ff0322 b hscroll
+e0ff0326 b usedVDPSprite
+e0ff0328 b xgm2WaitTab
+e0ff0330 b xgm2IdleTab
+e0ff0338 b xgmTempoCnt
+e0ff033c b xgmWaitTab
+e0ff037c b xgmIdleTab
+e0ff03bc b xgmTempoDef
+e0ff03be b xgmTempo
+e0ff03c0 b busProtectSignalAddress
+e0ff03c2 b driverFlags
+e0ff03c4 b currentDriver
+e0ff03c6 b allocStack
+e0ff0506 b lastVTimer.0
+e0ff0508 b text_plan
+e0ff050c b text_basetile
+e0ff050e b lastVCnt
+e0ff0510 b windowWidthSft
+e0ff0512 b planeWidthSft
+e0ff0514 b windowWidth
+e0ff0516 b planeHeight
+e0ff0518 b planeWidth
+e0ff051a b hscrl_addr
+e0ff051c b window_addr
+e0ff051e b lastTick
+e0ff0522 b cpuFrameLoad
+e0ff0524 b frameLoadIndex
+e0ff0526 b frameLoads
+e0ff0536 b vblankCB
+e0ff053a b flags
+e0ff053c b screenHeight
+e0ff053e b screenWidth
+e0ff0540 b maps_addr
+e0ff0542 b slist_addr
+e0ff0544 b vdpSpriteCache
+e0ff0844 b spriteVramSize
+e0ff0848 b vram
+e0ff0854 b lastSprite
+e0ff0858 b firstSprite
+e0ff085c b spritesPool
+e0ff0860 b fadeCounter
+e0ff0862 b heap
+e0ff0866 b free.lto_priv.0
+e0ff086a b bgb_addr
+e0ff086c b bga_addr
+e0ff086e b randomSeedSet
+e0ff0870 b joyEventCB
+e0ff0874 b retry
+e0ff0875 b phase.lto_priv.1
+e0ff0876 b gun
+e0ff0877 b extSet
+e0ff0878 b disableIntStack
+e0ff087a b joyAxisY
+e0ff088a b joyAxisX
+e0ff089a b joyState
+e0ff08aa b joyType
+e0ff08b2 b portSupport
+e0ff08b4 b portType
+e0ff08b6 b gport
+e0ff08b8 b regValues
+e0ff08cc b flag
+e0ff08ce b maxTransferPerFrame
+e0ff08d0 b queueSize
+e0ff08d2 b nextDataBuffer
+e0ff08d6 b queueTransferSize
+e0ff08d8 b queueIndexLimit
+e0ff08da b queueIndex
+e0ff08dc b dmaDataBuffer
+e0ff08e0 b dataBufferSize
+e0ff08e2 b phase.lto_priv.0
+e0ff08e4 B _bend
 e1000000 A __stack
 fffffc03 a DBL_MIN_EXP
 ffffffff a LESS

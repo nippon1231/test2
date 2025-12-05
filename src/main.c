@@ -5,7 +5,7 @@
 
 // Small LCG RNG for environments where <stdlib.h> is not available
 static unsigned int _rng_state = 0x12345678;
-static int my_rand(void) {
+int my_rand(void) {
     _rng_state = _rng_state * 1664525u + 1013904223u;
     return (int)((_rng_state >> 16) & 0x7FFF);
 }
@@ -13,6 +13,7 @@ static int my_rand(void) {
 #include "game.h"
 #include "bullets.h"
 #include "boss.h"
+#include "enemies.h"
 
 
 
@@ -21,6 +22,7 @@ GameState game_state;
 char info[10];
 Player player;
 Boss boss;
+Enemy enemies[MAX_ENEMIES];
 s16 cameraX = 0;
 s16 cameraY = 0;
 static u16 fire_cooldown = 0;
@@ -198,6 +200,229 @@ void initBoss() {
     boss.shoot_cooldown = 0;
     boss.health = BOSS_MAX_HEALTH;
     boss.alive = TRUE;
+}
+
+// Initialiser les ennemis
+void initEnemies() {
+    // Initialize all enemies as inactive
+    for (u8 i = 0; i < MAX_ENEMIES; i++) {
+        enemies[i].active = FALSE;
+        enemies[i].alive = FALSE;
+        enemies[i].sprite = NULL;
+    }
+    
+    // Spawn first enemy at position
+    enemies[0].x = FIX32(200);
+    enemies[0].y = FIX32(200);
+    enemies[0].vx = FIX32(0);
+    enemies[0].vy = FIX32(0);
+    enemies[0].active = TRUE;
+    enemies[0].alive = TRUE;
+    enemies[0].onGround = FALSE;
+    enemies[0].facingLeft = TRUE;
+    enemies[0].health = ENEMY_MAX_HEALTH;
+    enemies[0].action = EANIM_IDLE;
+    enemies[0].patrol_left = 150;
+    enemies[0].patrol_right = 250;
+    enemies[0].aggro_range = 100;
+    enemies[0].respawn_timer = 0;
+    enemies[0].spawn_min_x = 150;
+    enemies[0].spawn_max_x = 300;
+    enemies[0].spawn_y = 50;
+    enemies[0].sprite = SPR_addSprite(&sprite_soldier, 
+                                      F32_toInt(enemies[0].x), 
+                                      F32_toInt(enemies[0].y), 
+                                      TILE_ATTR(PAL2, 0, FALSE, FALSE));
+    if (enemies[0].sprite != NULL) {
+        SPR_setAnim(enemies[0].sprite, EANIM_IDLE);
+    }
+    
+    // Spawn second enemy
+    enemies[1].x = FIX32(400);
+    enemies[1].y = FIX32(200);
+    enemies[1].vx = FIX32(0);
+    enemies[1].vy = FIX32(0);
+    enemies[1].active = TRUE;
+    enemies[1].alive = TRUE;
+    enemies[1].onGround = FALSE;
+    enemies[1].facingLeft = FALSE;
+    enemies[1].health = ENEMY_MAX_HEALTH;
+    enemies[1].action = EANIM_IDLE;
+    enemies[1].patrol_left = 350;
+    enemies[1].patrol_right = 450;
+    enemies[1].aggro_range = 80;
+    enemies[1].respawn_timer = 0;
+    enemies[1].spawn_min_x = 350;
+    enemies[1].spawn_max_x = 500;
+    enemies[1].spawn_y = 50;
+    enemies[1].sprite = SPR_addSprite(&sprite_soldier, 
+                                      F32_toInt(enemies[1].x), 
+                                      F32_toInt(enemies[1].y), 
+                                      TILE_ATTR(PAL2, 0, FALSE, FALSE));
+    if (enemies[1].sprite != NULL) {
+        SPR_setAnim(enemies[1].sprite, EANIM_IDLE);
+    }
+}
+
+// Met à jour un ennemi
+void updateEnemy(Enemy* enemy) {
+    if (!enemy->active) return;
+    
+    // Handle respawn timer if enemy is dead
+    if (!enemy->alive) {
+        if (enemy->respawn_timer > 0) {
+            enemy->respawn_timer--;
+        } else {
+            // Time to respawn - pick random position
+            s16 spawn_range = enemy->spawn_max_x - enemy->spawn_min_x;
+            if (spawn_range > 0) {
+                s16 random_offset = (my_rand() % spawn_range);
+                s16 spawn_x = enemy->spawn_min_x + random_offset;
+                
+                enemy->x = FIX32(spawn_x);
+                enemy->y = FIX32(enemy->spawn_y);
+                enemy->vx = FIX32(0);
+                enemy->vy = FIX32(0);
+                enemy->alive = TRUE;
+                enemy->onGround = FALSE;
+                enemy->health = ENEMY_MAX_HEALTH;
+                enemy->action = EANIM_IDLE;
+                enemy->facingLeft = (my_rand() % 2) == 0;
+                
+                // Recreate sprite
+                if (enemy->sprite == NULL) {
+                    s16 screenX = F32_toInt(enemy->x) - cameraX;
+                    s16 screenY = F32_toInt(enemy->y) - cameraY;
+                    enemy->sprite = SPR_addSprite(&sprite_soldier, 
+                                                  screenX, 
+                                                  screenY, 
+                                                  TILE_ATTR(PAL2, 0, FALSE, FALSE));
+                    if (enemy->sprite != NULL) {
+                        SPR_setAnim(enemy->sprite, EANIM_IDLE);
+                    }
+                }
+            }
+        }
+        return;
+    }
+    
+    // Apply gravity
+    if (!enemy->onGround) {
+        enemy->vy = enemy->vy + FIX32(GRAVITY);
+        if (enemy->vy > FIX32(MAX_FALL_SPEED)) {
+            enemy->vy = FIX32(MAX_FALL_SPEED);
+        }
+    }
+    
+    // Calculate distance to player
+    s16 distToPlayer = F32_toInt(player.x - enemy->x);
+    s16 absDistToPlayer = (distToPlayer < 0) ? -distToPlayer : distToPlayer;
+    
+    // AI behavior
+    if (absDistToPlayer < enemy->aggro_range) {
+        // Aggro: move toward player
+        if (distToPlayer < -10) {
+            enemy->vx = FIX32(-ENEMY_WALK_SPEED);
+            enemy->facingLeft = FALSE;
+            if (enemy->onGround) enemy->action = EANIM_WALK;
+        } else if (distToPlayer > 10) {
+            enemy->vx = FIX32(ENEMY_WALK_SPEED);
+            enemy->facingLeft = TRUE;
+            if (enemy->onGround) enemy->action = EANIM_WALK;
+        } else {
+            enemy->vx = FIX32(0);
+            if (enemy->onGround) enemy->action = EANIM_IDLE;
+        }
+    } else {
+        // Patrol behavior
+        s16 enemyX = F32_toInt(enemy->x);
+        if (enemyX <= enemy->patrol_left) {
+            enemy->vx = FIX32(ENEMY_WALK_SPEED);
+            enemy->facingLeft = FALSE;
+        } else if (enemyX >= enemy->patrol_right) {
+            enemy->vx = FIX32(-ENEMY_WALK_SPEED);
+            enemy->facingLeft = TRUE;
+        }
+        if (enemy->onGround && enemy->vx != FIX32(0)) {
+            enemy->action = EANIM_WALK;
+        } else if (enemy->onGround) {
+            enemy->action = EANIM_IDLE;
+        }
+    }
+    
+    // Horizontal movement with collision
+    fix32 newX = enemy->x + enemy->vx;
+    fix32 collisionY = enemy->y;
+    if (!checkSolidCollision(newX, collisionY, ENEMY_HITBOX_W, ENEMY_HITBOX_H)) {
+        enemy->x = newX;
+    }
+    
+    // Vertical movement with collision
+    fix32 newY = enemy->y + enemy->vy;
+    
+    if (enemy->vy > FIX32(0)) {
+        // Falling
+        enemy->onGround = FALSE;
+        if (!checkSolidCollision(enemy->x, newY, ENEMY_HITBOX_W, ENEMY_HITBOX_H)) {
+            if (!checkPlatformCollision(enemy->x, newY, ENEMY_HITBOX_W, ENEMY_HITBOX_H)) {
+                enemy->y = newY;
+            } else {
+                enemy->onGround = TRUE;
+                enemy->vy = FIX32(0);
+            }
+        } else {
+            enemy->onGround = TRUE;
+            enemy->vy = FIX32(0);
+        }
+    } else if (enemy->vy < FIX32(0)) {
+        // Jumping (not used but kept for completeness)
+        if (!checkSolidCollision(enemy->x, newY, ENEMY_HITBOX_W, ENEMY_HITBOX_H)) {
+            enemy->y = newY;
+        } else {
+            enemy->vy = FIX32(0);
+        }
+    }
+    
+    // Check collision with player for damage
+    if (absDistToPlayer < enemy->aggro_range && enemy->alive) {
+        s16 enemyX = F32_toInt(enemy->x);
+        s16 enemyY = F32_toInt(enemy->y);
+        s16 playerX = F32_toInt(player.x);
+        s16 playerY = F32_toInt(player.y);
+        
+        if (enemyX < playerX + PLAYER_HITBOX_W && enemyX + ENEMY_HITBOX_W > playerX &&
+            enemyY < playerY + PLAYER_HITBOX_H && enemyY + ENEMY_HITBOX_H > playerY) {
+            // Enemy touches player - deal damage
+            if (player.health > 0) {
+                player.health--;
+                // Push player back slightly
+                if (distToPlayer > 0) {
+                    player.vx = FIX32(3); // push right
+                } else {
+                    player.vx = FIX32(-3); // push left
+                }
+                // Small upward bump
+                player.vy = FIX32(-2);
+                player.onGround = FALSE;
+            }
+        }
+    }
+    
+    // Update sprite position (relative to camera)
+    if (enemy->sprite != NULL) {
+        s16 screenX = F32_toInt(enemy->x) - cameraX;
+        s16 screenY = F32_toInt(enemy->y) - cameraY;
+        SPR_setPosition(enemy->sprite, screenX, screenY);
+        SPR_setHFlip(enemy->sprite, enemy->facingLeft);
+        SPR_setAnim(enemy->sprite, enemy->action);
+    }
+}
+
+// Met à jour tous les ennemis
+void updateEnemies() {
+    for (u8 i = 0; i < MAX_ENEMIES; i++) {
+        updateEnemy(&enemies[i]);
+    }
 }
 
 // Met à jour la physique du joueur
@@ -474,13 +699,18 @@ int main() {
     // Charger la palette dédiée du boss (déclarée dans resources.res)
     PAL_setPalette(PAL3, palette_boss.data, DMA);
     
+    // Charger la palette pour les ennemis soldier
+    PAL_setPalette(PAL2, palette_soldier.data, DMA);
+    
     drawMap();
     initPlayer();
-    initBoss(); 
+    initBoss();
+    initEnemies();
     enemy_bullets_init();
     SPR_setAnim(boss.sprite,BANIM_IDLE);
     while (1) {
         updatePlayer();
+        updateEnemies();
         bullets_update();
         enemy_bullets_update();
         // Boss automatic shooting when visible on screen

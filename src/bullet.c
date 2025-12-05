@@ -5,11 +5,16 @@
 #include "bullets.h"
 #include "player.h"
 #include "boss.h"
+#include "enemies.h"
 // Camera position (defined in main.c)
 extern s16 cameraX;
 extern s16 cameraY;
 // Boss instance (defined in main.c)
 extern Boss boss;
+// Enemies array (defined in main.c)
+extern Enemy enemies[MAX_ENEMIES];
+// RNG function (defined in main.c)
+extern int my_rand(void);
 // Screen dimensions and sprite margin used for off-screen checks
 #define SCREEN_W 320
 #define SCREEN_H 224
@@ -137,6 +142,50 @@ void bullets_update() {
                     continue; // next bullet
                 }
             }
+            
+            // Check collision with enemies in world coordinates
+            bool hit_enemy = FALSE;
+            for (u8 e = 0; e < MAX_ENEMIES; e++) {
+                if (enemies[e].active && enemies[e].alive) {
+                    s32 bulletWorldX = F32_toInt(game_state.player_bullet[i].x);
+                    s32 bulletWorldY = F32_toInt(game_state.player_bullet[i].y);
+                    s32 enemyWorldX = F32_toInt(enemies[e].x);
+                    s32 enemyWorldY = F32_toInt(enemies[e].y);
+                    
+                    if (bulletWorldX < enemyWorldX + ENEMY_HITBOX_W && bulletWorldX + PLAYER_BULLET_W > enemyWorldX
+                        && bulletWorldY < enemyWorldY + ENEMY_HITBOX_H && bulletWorldY + PLAYER_BULLET_H > enemyWorldY) {
+                        // bullet hits enemy
+                        
+                        // apply damage
+                        enemies[e].health--;
+                        if (enemies[e].health > 0) {
+                            // enemy hit but still alive
+                            enemies[e].action = EANIM_HIT;
+                        } else {
+                            // enemy defeated - remove sprite
+                            enemies[e].alive = FALSE;
+                            if (enemies[e].sprite != NULL) {
+                                SPR_releaseSprite(enemies[e].sprite);
+                                enemies[e].sprite = NULL;
+                            }
+                            // Set random respawn delay between 3-8 seconds (180-480 frames at 60fps)
+                            enemies[e].respawn_timer = 180 + (my_rand() % 300);
+                        }
+                        
+                        // Remove bullet
+                        game_state.player_bullet[i].active = FALSE;
+                        if (game_state.player_bullet[i].sprite != NULL) {
+                            SPR_releaseSprite(game_state.player_bullet[i].sprite);
+                            game_state.player_bullet[i].sprite = NULL;
+                        }
+                        
+                        hit_enemy = TRUE;
+                        break; // exit enemy loop
+                    }
+                }
+            }
+            if (hit_enemy) continue; // next bullet
+            
             // Désactiver si hors écran (comparer avec marge pour tenir compte de la taille du sprite)
             if (sx < -SPRITE_MARGIN || sx >= SCREEN_W + SPRITE_MARGIN) {
                 game_state.player_bullet[i].active = FALSE;
