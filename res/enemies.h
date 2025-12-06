@@ -12,7 +12,7 @@
 #define ENEMY_CONTACT_DAMAGE 1
 
 // Animation states for soldier enemy
-#define EANIM_IDLE  0
+#define EANIM_IDLE  1
 #define EANIM_WALK  2
 #define EANIM_ATTACK 1
 #define EANIM_HIT 3
