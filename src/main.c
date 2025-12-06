@@ -346,10 +346,10 @@ void updateEnemy(Enemy* enemy) {
         s16 enemyX = F32_toInt(enemy->x);
         if (enemyX <= enemy->patrol_left) {
             enemy->vx = FIX32(ENEMY_WALK_SPEED);
-            enemy->facingLeft = FALSE;
+            enemy->facingLeft = true;
         } else if (enemyX >= enemy->patrol_right) {
             enemy->vx = FIX32(-ENEMY_WALK_SPEED);
-            enemy->facingLeft = TRUE;
+            enemy->facingLeft = false;
         }
         if (enemy->onGround && enemy->vx != FIX32(0)) {
             enemy->action = EANIM_WALK;
